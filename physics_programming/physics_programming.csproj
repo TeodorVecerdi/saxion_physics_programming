@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+        <ProjectGuid>{20748A35-7609-4853-BA58-04783F73E5E6}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>physics_programming</RootNamespace>
+        <AssemblyName>physics_programming</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>x86</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>x86</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../GXPEngine/GXPEngine.csproj">
+            <Project>{b5fcb6a7-b775-46cf-941e-5f4f8da125b9}</Project>
+            <Name>GXPEngine</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Globals.cs" />
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="data\**" />
+<!--        <Content Include="Game\TODO.md" />-->
+        <Content Include="lib\**" />
+    </ItemGroup>
+    
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <PropertyGroup>
+        <DataDestinationDirectory>$(OutputPath)\data</DataDestinationDirectory>
+        <DataSourceDirectory>data</DataSourceDirectory>
+    </PropertyGroup>
+    <PropertyGroup>
+        <LibDestinationDirectory>$(OutputPath)\lib</LibDestinationDirectory>
+        <LibSourceDirectory>lib</LibSourceDirectory>
+    </PropertyGroup>
+    <!--  Move data and lib folders to output on build -->
+    <Target Name="BeforeBuild">
+        <CreateItem Include="$(DataSourceDirectory)\**\*.*">
+            <Output TaskParameter="Include" ItemName="DataFiles" />
+        </CreateItem>
+        <CreateItem Include="$(LibSourceDirectory)\**\*.*">
+            <Output TaskParameter="Include" ItemName="LibFiles" />
+        </CreateItem>
+        <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(DataDestinationDirectory)\%(RecursiveDir)%(Filename)%(Extension)')" />
+        <Copy SourceFiles="@(LibFiles)" DestinationFiles="@(LibFiles->'$(LibDestinationDirectory)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+
+</Project>
