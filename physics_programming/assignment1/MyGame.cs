@@ -3,7 +3,7 @@ namespace physics_programming.assignment1 {
     using System.Drawing;
 
     public class MyGame : Game {
-        public static void Main() {
+        public static void Main2() {
             new MyGame().Start();
         }
 
@@ -21,7 +21,7 @@ namespace physics_programming.assignment1 {
             AddChild(_text);
         }
 
-        void Update() {
+        private void Update() {
             if(_ball.IsDone) return;
             
             _ball.Step();

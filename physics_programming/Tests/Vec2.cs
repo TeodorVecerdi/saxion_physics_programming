@@ -119,5 +119,70 @@ namespace physics_programming.tests {
             var c = a != b;
             Assert.IsFalse(c, $"{a} != {b} should be {false}, instead got {c}");
         }
+
+        [Test]
+        public void Deg2Rad() {
+            float degrees = 180.0f;
+            float radians = Vec2.Deg2Rad(degrees);
+            Assert.IsTrue(Math.Abs(radians - Mathf.PI) < tolerance);
+        }
+        
+        [Test]
+        public void Rad2Deg() {
+            float radians = Mathf.PI;
+            float degrees = Vec2.Rad2Deg(radians);
+            Assert.IsTrue(Math.Abs(degrees - 180.0f) < tolerance);
+        }
+
+        [Test]
+        public void GetUnitVector() {
+            var unit = Vec2.GetUnitVectorDeg(90);
+            var expected = Vec2.Down;
+            var diff = expected - unit;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"unit({unit}) == expected({expected})");
+        }
+
+        [Test]
+        public void SetAngle() {
+            var a = new Vec2(10, 0);
+            var expected = new Vec2(0, 10);
+            a.SetAngleDegrees(90);
+            var diff = expected - a;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"a({a}) == expected({expected})");
+        }
+
+        [Test]
+        public void GetAngle() {
+            var a = new Vec2(0, 10);
+            var angle = a.GetAngleDegrees();
+            Assert.IsTrue(Math.Abs(90 - angle) < tolerance, $"angle({angle}) == expected(90)");
+        }
+
+        [Test]
+        public void Rotate() {
+            var a = new Vec2(1, 0);
+            var expected = new Vec2(0, 1);
+            a.RotateDegrees(90);
+            var diff = expected - a;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"a({a}) == expected({expected})");
+        }
+
+        [Test]
+        public void RotateAround() {
+            var a = new Vec2(4, 6);
+            var p = new Vec2(2, 1);
+            var expected = new Vec2(-3, 3);
+            a.RotateAroundDegrees(p, 90.0f);
+            var diff = expected - a;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"a({a}) == expected({expected})");
+        }
     }
 }
