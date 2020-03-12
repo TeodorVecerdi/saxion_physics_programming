@@ -122,16 +122,26 @@ namespace physics_programming.tests {
 
         [Test]
         public void Deg2Rad() {
-            float degrees = 180.0f;
-            float radians = Vec2.Deg2Rad(degrees);
-            Assert.IsTrue(Math.Abs(radians - Mathf.PI) < tolerance);
+            var degrees = 288.477720936f;
+            var radians = Vec2.Deg2Rad(degrees);
+            var expected = 5.034886048982f;
+            Assert.IsTrue(Math.Abs(radians - expected) < tolerance);
         }
         
         [Test]
         public void Rad2Deg() {
-            float radians = Mathf.PI;
-            float degrees = Vec2.Rad2Deg(radians);
-            Assert.IsTrue(Math.Abs(degrees - 180.0f) < tolerance);
+            var radians = 3.494212610f;
+            var degrees = Vec2.Rad2Deg(radians);
+            var expected = 200.2036353f;
+            Assert.IsTrue(Math.Abs(degrees - expected) < tolerance);
+        }
+
+        [Test]
+        public void RandomUnitVector() {
+            var unit = Vec2.RandomUnitVector();
+            var length = unit.sqrMagnitude;
+            var expected = 1f;
+            Assert.IsTrue(Math.Abs(length - expected) < tolerance);
         }
 
         [Test]
@@ -164,9 +174,9 @@ namespace physics_programming.tests {
 
         [Test]
         public void Rotate() {
-            var a = new Vec2(1, 0);
-            var expected = new Vec2(0, 1);
-            a.RotateDegrees(90);
+            var a = new Vec2(3, 8);
+            var expected = new Vec2(-5.4282032302755091741f, 6.598076211353315f);
+            a.RotateDegrees(60);
             var diff = expected - a;
             diff.x = Math.Abs(diff.x);
             diff.y = Math.Abs(diff.y);

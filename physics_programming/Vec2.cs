@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using GXPEngine;
+using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
 namespace physics_programming {
@@ -98,8 +99,7 @@ namespace physics_programming {
         }
 
         public static Vec2 RandomUnitVector() {
-            var random = new Random(Time.now);
-            var rad = Mathf.PI * 2f * (float) random.NextDouble();
+            var rad = GXPEngine.Utils.Random(0, Mathf.PI * 2f);
             return GetUnitVectorRad(rad);
         }
 
