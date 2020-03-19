@@ -59,6 +59,11 @@
         <Compile Include="assignment2\Bullet.cs" />
         <Compile Include="assignment2\MyGame.cs" />
         <Compile Include="assignment2\Tank.cs" />
+        <Compile Include="assignment3\Block.cs" />
+        <Compile Include="assignment3\CollisionInfo.cs" />
+        <Compile Include="assignment3\Components\Arrow.cs" />
+        <Compile Include="assignment3\Components\LineSegment.cs" />
+        <Compile Include="assignment3\MyGame.cs" />
         <Compile Include="Globals.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Tests\Vec2.cs" />

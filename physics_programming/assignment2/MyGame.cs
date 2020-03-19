@@ -2,7 +2,7 @@ using GXPEngine;
 
 namespace physics_programming.assignment2 {
     public class MyGame : Game {
-        static void Main() {
+        static void Main2() {
             new MyGame().Start();
         }
 

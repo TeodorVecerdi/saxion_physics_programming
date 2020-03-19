@@ -3,7 +3,7 @@ namespace physics_programming.assignment1 {
     using System.Drawing;
 
     public class MyGame : Game {
-        public static void Main2() {
+        public static void Main1() {
             new MyGame().Start();
         }
 
