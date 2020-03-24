@@ -1,7 +1,6 @@
-﻿using System;
-using physics_programming;
+﻿using GXPEngine;
 
-namespace GXPEngine
+namespace physics_programming.assignment3.Components
 {
 	public class Arrow:GameObject
 	{

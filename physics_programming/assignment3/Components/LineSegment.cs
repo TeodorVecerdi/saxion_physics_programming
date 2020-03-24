@@ -1,9 +1,8 @@
-using System;
+using GXPEngine;
 using GXPEngine.Core;
 using GXPEngine.OpenGL;
-using physics_programming;
 
-namespace GXPEngine
+namespace physics_programming.assignment3.Components
 {
 	/// <summary>
 	/// Implements an OpenGL line

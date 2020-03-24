@@ -194,5 +194,26 @@ namespace physics_programming.tests {
             diff.y = Math.Abs(diff.y);
             Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"a({a}) == expected({expected})");
         }
+
+        [Test]
+        public void Dot() {
+            var a = new Vec2(4, 3);
+            var b = new Vec2(3, -2);
+            var dot = a.Dot(b);
+            var expected = 4 * 3 + 3 * -2;
+            var diff = Math.Abs(dot - expected);
+            Assert.IsTrue(diff < tolerance, $"a{a} dot b{b} = {dot}, expected {expected}");
+        }
+
+        [Test]
+        public void Normal() {
+            var a = new Vec2(3, -4);
+            var normal = a.Normal();
+            var expected = new Vec2(4, 3).normalized;
+            var diff = expected - normal;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"normal({a}) = {normal}, expected({expected})");
+        }
     }
 }

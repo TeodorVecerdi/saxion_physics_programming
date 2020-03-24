@@ -25,7 +25,21 @@ namespace physics_programming {
 
         public float magnitude => (float) Math.Sqrt(x * x + y * y);
         public float sqrMagnitude => x * x + y * y;
-        public Vec2 normalized => this / magnitude;
+        public Vec2 normalized => magnitude > 0 ? this / magnitude : this;
+
+        public float Dot(Vec2 other) {
+            return x * other.x + y * other.y;
+        }
+
+        public Vec2 Normal() {
+            return new Vec2(-y, x).normalized;
+        }
+
+        public void Reflect(Vec2 normal, float bounciness = 1f) {
+            var vOut = this - (1 + bounciness) * Dot(normal) * normal;
+            x = vOut.x;
+            y = vOut.y;
+        }
 
         public void Normalize() {
             var mag = magnitude;
