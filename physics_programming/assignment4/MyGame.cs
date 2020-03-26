@@ -8,7 +8,7 @@ namespace physics_programming.assignment4 {
     public class MyGame : Game {
         private readonly Ball ball;
         private readonly EasyDraw text;
-        private readonly NLineSegment lineSegment;
+        private readonly NLineSegment lineSegment, lineSegment2;
         private readonly NLineSegment wallLeft, wallRight, wallTop, wallBottom;
 
         public List<NLineSegment> Lines;
@@ -22,29 +22,29 @@ namespace physics_programming.assignment4 {
             AddChild(text);
 
             lineSegment = new NLineSegment(new Vec2(500, 500), new Vec2(100, 200), 0xff00ff00, 3);
+            lineSegment2 = new NLineSegment(new Vec2(100, 200), new Vec2(500, 500), 0xff00ff00, 3);
             wallLeft = new NLineSegment(new Vec2(0, height), new Vec2(0, 0), pLineWidth: 2);
             wallRight = new NLineSegment(new Vec2(width, 0), new Vec2(width, height), pLineWidth: 2);
             wallTop = new NLineSegment(new Vec2(0, 0), new Vec2(width, 0), pLineWidth: 2);
             wallBottom = new NLineSegment(new Vec2(width, height), new Vec2(0, height), pLineWidth: 2);
 
             AddChild(lineSegment);
+            AddChild(lineSegment2);
             AddChild(wallLeft);
             AddChild(wallRight);
             AddChild(wallTop);
             AddChild(wallBottom);
 
-            Lines = new List<NLineSegment> {lineSegment, wallLeft, wallRight, wallTop, wallBottom};
+            Lines = new List<NLineSegment> {lineSegment,lineSegment2, wallLeft, wallRight, wallTop, wallBottom};
             Restart();
             PrintInfo();
         }
 
-        private static void Main() {
-            new MyGame().Start();
-        }
-
-        #region Settings
+        #region Debug
         private bool _paused;
+
         private bool _stepped;
+
         void PrintInfo() {
             Console.WriteLine("Hold spacebar to slow down the frame rate.");
             Console.WriteLine("Use arrow keys and backspace to set the gravity.");
@@ -101,23 +101,37 @@ namespace physics_programming.assignment4 {
             // For now: this just puts the ball at the mouse position:
             ball.Step();
             foreach (var line in Lines) {
-                var ballDiff = ball.Position - line.Start;
                 var segmentVec = line.End - line.Start;
+                var normalizedSegmentVec = segmentVec.normalized;
+                var segmentLengthSqr = segmentVec.sqrMagnitude;
                 var normal = segmentVec.Normal();
-                var ballDistance = ballDiff.Dot(normal);
-
-                //compare distance with ball radius
-                if (ballDistance < ball.Radius) {
+                
+                // Start of line
+                var ballDiff = ball.Position - line.Start;
+                var ballDistance = Math.Abs(ballDiff.Dot(normal));
+                var projectionLength = ballDiff.Dot(normalizedSegmentVec);
+                var projectionVector = projectionLength * normalizedSegmentVec;
+                var projectionVectorDot = projectionVector.Dot(normalizedSegmentVec);
+                var projectionLengthSqr = projectionLength*projectionLength;
+                
+                // Checks
+                var ballDistanceCheck = ballDistance < ball.Radius;
+                var projectionLengthCheck = projectionLengthSqr < segmentLengthSqr;
+                var projectionDirectionCheck = projectionVectorDot > 0;
+                
+                if (ballDistanceCheck &&  projectionLengthCheck && projectionDirectionCheck) {
                     ball.SetColor(1, 0, 0);
                     // Reset position
                     ball.Position += (-ballDistance + ball.Radius) * normal;
                     // Reflect
                     ball.Velocity.Reflect(normal, 0.5f);
-                    // Console.WriteLine($"Ball collided with line[{line.Start}, {line.End}]");
                 } else {
                     ball.SetColor(0, 1, 0);
                 }
             }
+        }
+        private static void Main() {
+            new MyGame().Start();
         }
     }
 }

@@ -96,7 +96,7 @@ namespace physics_programming.assignment3 {
             // create new scene:
             switch (sceneNumber) {
                 case 1: // different sizes, gravity
-                    Block.acceleration = new Vec2(0, 1);
+                    Block.Acceleration = new Vec2(0, 1);
 
                     _movers.Add(new Block(30, new Vec2(200, 300), new Vec2(1, 0)));
                     _movers.Add(new Block(50, new Vec2(600, 300), new Vec2(-1, 0)));
@@ -106,7 +106,7 @@ namespace physics_programming.assignment3 {
                     // _movers.Add(new Block(20, new Vec2(400, 400), new Vec2(3, 3)));
                     break;
                 case 2: // stack
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
 
                     _movers.Add(new Block(30, new Vec2(100, 520), new Vec2(7, 0)));
                     _movers.Add(new Block(50, new Vec2(200, 500), new Vec2(7, 0)));
@@ -115,7 +115,7 @@ namespace physics_programming.assignment3 {
                     _movers.Add(new Block(20, new Vec2(500, 530), new Vec2(7, 0)));
                     break;
                 case 3: // Newton's cradle
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
                     _movers.Add(new Block(25, new Vec2(50, 500), new Vec2(20, 0)));
                     _movers.Add(new Block(25, new Vec2(400, 500), new Vec2(0, 0)));
                     _movers.Add(new Block(25, new Vec2(450, 500), new Vec2(0, 0)));
@@ -123,21 +123,21 @@ namespace physics_programming.assignment3 {
                     _movers.Add(new Block(25, new Vec2(550, 500), new Vec2(0, 0)));
                     break;
                 case 4: // Tunneling
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
                     _movers.Add(new Block(20, new Vec2(145, 510), new Vec2(85, 0)));
                     _movers.Add(new Block(20, new Vec2(472, 500), new Vec2(-10, 0)));
                     break;
                 case 5: // Diagonal impact test
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
                     _movers.Add(new Block(25, new Vec2(199, 71), new Vec2(30, 30)));
                     _movers.Add(new Block(25, new Vec2(400, 300), new Vec2(0, 0)));
                     break;
                 case 6: // basic, one block launched into corner, fast
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
                     _movers.Add(new Block(30, new Vec2(400, 300), new Vec2(60, 43)));
                     break;
                 default: // basic, one block launched into corner, slow
-                    Block.acceleration = new Vec2(0, 0);
+                    Block.Acceleration = new Vec2(0, 0);
                     _movers.Add(new Block(30, new Vec2(400, 300), new Vec2(6, 4)));
                     break;
             }
@@ -171,8 +171,8 @@ namespace physics_programming.assignment3 {
         }
 
         void PrintSettings() {
-            Console.WriteLine("Extra text output: " + Block.wordy);
-            Console.WriteLine("Bounciness: " + Block.bounciness);
+            Console.WriteLine("Extra text output: " + Block.Wordy);
+            Console.WriteLine("Bounciness: " + Block.Bounciness);
         }
 
         void HandleInput() {
@@ -188,28 +188,28 @@ namespace physics_programming.assignment3 {
 
             // gravity:
             if (Input.GetKeyDown(Key.UP)) {
-                Block.acceleration = new Vec2(0, -1);
+                Block.Acceleration = new Vec2(0, -1);
             }
 
             if (Input.GetKeyDown(Key.DOWN)) {
-                Block.acceleration = new Vec2(0, 1);
+                Block.Acceleration = new Vec2(0, 1);
             }
 
             if (Input.GetKeyDown(Key.LEFT)) {
-                Block.acceleration = new Vec2(-1, 0);
+                Block.Acceleration = new Vec2(-1, 0);
             }
 
             if (Input.GetKeyDown(Key.RIGHT)) {
-                Block.acceleration = new Vec2(1, 0);
+                Block.Acceleration = new Vec2(1, 0);
             }
 
             if (Input.GetKeyDown(Key.BACKSPACE)) {
-                Block.acceleration = new Vec2(0, 0);
+                Block.Acceleration = new Vec2(0, 0);
             }
 
             // Debug lines:
             if (Input.GetKeyDown(Key.D)) {
-                Block.drawDebugLine ^= true;
+                Block.DrawDebugLine ^= true;
             }
 
             if (Input.GetKeyDown(Key.C)) {
@@ -218,12 +218,12 @@ namespace physics_programming.assignment3 {
 
             // other options:
             if (Input.GetKeyDown(Key.B)) {
-                Block.bounciness = 1.5f - Block.bounciness;
+                Block.Bounciness = 1.5f - Block.Bounciness;
                 PrintSettings();
             }
 
             if (Input.GetKeyDown(Key.W)) {
-                Block.wordy ^= true;
+                Block.Wordy ^= true;
                 PrintSettings();
             }
 

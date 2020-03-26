@@ -1,74 +1,67 @@
 ﻿using System;
-using System.Collections.Generic;
 using GXPEngine;
 using physics_programming.assignment3.Components;
 
 namespace physics_programming.assignment3 {
     public class Block : EasyDraw {
+        public const float Gravity = 0.0981f;
         /******* PUBLIC FIELDS AND PROPERTIES *********************************************************/
 
         // These four public static fields are changed from MyGame, based on key input (see Console):
-        public static bool drawDebugLine = false;
-        public static bool wordy = false;
-        public static float bounciness = .98f;
-        // public static float bounciness = 1f;
+        public static bool DrawDebugLine = false;
+        public static bool Wordy = false;
+        public static float Bounciness = 0.98f;
 
         // For ease of testing / changing, we assume every block has the same acceleration (gravity):
-        public static Vec2 acceleration = new Vec2(0, 0);
-        public const float gravity = 0.0981f;
-        public readonly int radius;
+        public static Vec2 Acceleration = new Vec2(0, 0);
 
-        // Mass = density * volume.
-        // In 2D, we assume volume = area (=all objects are assumed to have the same "depth")
-        public float Mass {
-            get {
-                return 4 * radius * radius * _density;
-            }
-        }
+        public readonly int Radius;
 
-        public Vec2 position {
-            get {
-                return _position;
-            }
-        }
+        public Vec2 Velocity;
 
-        public Vec2 velocity;
+        private const float colorFadeSpeed = 0.025f;
+
+        private readonly Arrow velocityIndicator;
+        private float blue = 1;
+
+        private readonly float density = 1;
+        private float green = 1;
+
+        private float red = 1;
+
+        private float smallestToi;
+        private Vec2 oldPosition;
 
         /******* PRIVATE FIELDS *******************************************************************/
 
         private Vec2 _position;
-        private Vec2 _oldPosition;
 
-        private Arrow _velocityIndicator;
+        // Mass = density * volume.
+        // In 2D, we assume volume = area (=all objects are assumed to have the same "depth")
+        public float Mass => 4 * Radius * Radius * density;
 
-        private float _red = 1;
-        private float _green = 1;
-        private float _blue = 1;
-
-        private float _density = 1;
-
-        private const float _colorFadeSpeed = 0.125f;
+        public Vec2 Position => _position;
 
         /******* PUBLIC METHODS *******************************************************************/
 
         public Block(int pRadius, Vec2 pPosition, Vec2 pVelocity) : base(pRadius * 2, pRadius * 2) {
-            radius = pRadius;
+            Radius = pRadius;
             _position = pPosition;
-            velocity = pVelocity;
+            Velocity = pVelocity;
 
-            SetOrigin(radius, radius);
-            draw();
+            SetOrigin(Radius, Radius);
+            Draw();
             UpdateScreenPosition();
-            _oldPosition = new Vec2(0, 0);
+            oldPosition = new Vec2(0, 0);
 
-            _velocityIndicator = new Arrow(_position, velocity, 10);
-            AddChild(_velocityIndicator);
+            velocityIndicator = new Arrow(_position, Velocity, 10);
+            AddChild(velocityIndicator);
         }
 
         public void SetFadeColor(float pRed, float pGreen, float pBlue) {
-            _red = pRed;
-            _green = pGreen;
-            _blue = pBlue;
+            red = pRed;
+            green = pGreen;
+            blue = pBlue;
         }
 
         public void Update() {
@@ -77,7 +70,7 @@ namespace physics_programming.assignment3 {
         }
 
         public void Step() {
-            _oldPosition = _position;
+            oldPosition = _position;
 
             // No need to make changes in this Step method (most of it is related to drawing, color and debug info). 
             // Work in Move instead.
@@ -92,19 +85,14 @@ namespace physics_programming.assignment3 {
 
         /******* THIS IS WHERE YOU SHOULD WORK: ***************************************************/
 
-        void Move() {
+        private void Move() {
             // TODO: implement Assignment 3 here (and in methods called from here).
-            velocity += acceleration * gravity;
-            _position += velocity;
-            // var collisions = CheckCollisions();
-            // ResolveCollisions(collisions);
-            // _position += velocity;
+            Velocity += Acceleration * Gravity;
+            _position += Velocity;
 
             // Example methods (replace/extend):
             CheckBoundaryCollisions();
             CheckBlockOverlaps();
-        
-        
 
             // TIP: You can use the CollisionInfo class to pass information between methods, e.g.:
             //
@@ -114,229 +102,202 @@ namespace physics_programming.assignment3 {
         }
 
         // This method is just an example of how to check boundaries, and change color.
-        void CheckBoundaryCollisions() {
-            var horizontalCollisionTOI = 0f;
-            var verticalCollisionTOI = 0f;
-            MyGame myGame = (MyGame) game;
-            if (_position.x - radius < myGame.LeftXBoundary) {
-                var b = _position.x - radius;
-                var a = myGame.LeftXBoundary + radius;
-                horizontalCollisionTOI = a / b;
-
-                // _position.x = myGame.LeftXBoundary + radius;
-                // velocity.x *= -bounciness;
-                SetFadeColor(1, 0.2f, 0.2f);
-                if (wordy) {
-                    Console.WriteLine("Left boundary collision");
-                }
-            } else if (_position.x + radius > myGame.RightXBoundary) {
-                var b = _position.x + radius;
-                var a = myGame.RightXBoundary - radius;
-                horizontalCollisionTOI = a / b;
-
-                // _position.x = myGame.RightXBoundary - radius;
-                // velocity.x *= -bounciness;
-                SetFadeColor(1, 0.2f, 0.2f);
-                if (wordy) {
-                    Console.WriteLine("Right boundary collision");
-                }
-            }
-
-            if (_position.y - radius < myGame.TopYBoundary) {
-                var b = _position.y - radius;
-                var a = myGame.TopYBoundary + radius;
-                verticalCollisionTOI = a / b;
-
-                // _position.y = myGame.TopYBoundary + radius;
-                // velocity.y *= -bounciness;
-                SetFadeColor(0.2f, 1, 0.2f);
-                if (wordy) {
-                    Console.WriteLine("Top boundary collision");
-                }
-            } else if (_position.y + radius > myGame.BottomYBoundary) {
-                var b = _position.y + radius;
-                var a = myGame.BottomYBoundary - radius;
-                verticalCollisionTOI = a / b;
-
-                // _position.y = myGame.BottomYBoundary - radius;
-                // velocity.y *= -bounciness;
-                SetFadeColor(0.2f, 1, 0.2f);
-                if (wordy) {
-                    Console.WriteLine("Bottom boundary collision");
-                }
-            }
-
-            Vec2 moveAmount = new Vec2(horizontalCollisionTOI * velocity.x, verticalCollisionTOI * velocity.y);
-            _position -= moveAmount;
-            if (horizontalCollisionTOI != 0f) {
-                velocity.x *= -bounciness;
-            }
-
-            if (verticalCollisionTOI != 0) {
-                velocity.y *= -bounciness;
-            }
-        }
-    
-        private List<CollisionInfo> CheckCollisions() {
+        private void CheckBoundaryCollisions() {
             var myGame = (MyGame) game;
-            var collisions = new List<CollisionInfo>();
-            for (var i = 0; i < myGame.GetNumberOfMovers(); i++) {
-                var other = myGame.GetMover(i);
-                if (other == this)
-                    continue;
-                if (HitTest(other, out var collisionInfo)) {
-                    collisions.Add(collisionInfo);
-                }
+            if (_position.x - Radius < myGame.LeftXBoundary) {
+                // move block from left to right boundary:
+                //_position.x += myGame.RightXBoundary - myGame.LeftXBoundary - 2 * radius;
+                //_position.x = myGame.LeftXBoundary + 2 * radius;		//assignment 1
+                PointOfImpactX(myGame.LeftXBoundary + Radius);
+                Velocity = -Bounciness * Velocity;
+                SetFadeColor(1, 0.2f, 0.2f);
+                if (Wordy)
+                    Console.WriteLine("Left boundary collision");
+            } else if (_position.x + Radius > myGame.RightXBoundary) {
+                // move block from right to left boundary:
+
+                //_position.x -= myGame.RightXBoundary - myGame.LeftXBoundary - 2 * radius;
+                //_position.x = myGame.RightXBoundary - 2*radius;		//assignment 1
+                PointOfImpactX(myGame.RightXBoundary - Radius);
+                Velocity = -Bounciness * Velocity;
+                SetFadeColor(1, 0.2f, 0.2f);
+                if (Wordy)
+                    Console.WriteLine("Right boundary collision");
             }
 
-            return collisions;
+            if (_position.y - Radius < myGame.TopYBoundary) {
+                // move block from top to bottom boundary:
+                //_position.y += myGame.BottomYBoundary - myGame.TopYBoundary - 2 * radius;
+                //_position.y = myGame.TopYBoundary + 2 * radius;		//assignment 1
+                PointOfImpactY(myGame.TopYBoundary + Radius);
+                Velocity.y = -Bounciness * Velocity.y;
+                SetFadeColor(0.2f, 1, 0.2f);
+                if (Wordy)
+                    Console.WriteLine("Top boundary collision");
+            } else if (_position.y + Radius > myGame.BottomYBoundary) {
+                // move block from bottom to top boundary:
+                //_position.y -= myGame.BottomYBoundary - myGame.TopYBoundary - 2 * radius;
+                //_position.y = myGame.BottomYBoundary - 2 * radius;		//assignment 1
+                PointOfImpactY(myGame.BottomYBoundary - Radius);
+                Velocity.y = -Bounciness * Velocity.y;
+                SetFadeColor(0.2f, 1, 0.2f);
+                if (Wordy)
+                    Console.WriteLine("Bottom boundary collision");
+            }
         }
 
-        private void ResolveCollisions(List<CollisionInfo> collisions) {
-            collisions.ForEach(ResolveCollision);
+        private void PointOfImpactX(float newCoordonate) {
+            var impactX = newCoordonate;
+            var a = Math.Abs(impactX - oldPosition.x);
+            var b = Math.Abs(_position.x - oldPosition.x);
+            var t = a / b;
+
+            var point = oldPosition + t * Velocity;
+            _position = point;
+        }
+
+        private void PointOfImpactY(float newCoordonate) {
+            var impactY = newCoordonate;
+            var a = Math.Abs(impactY - oldPosition.y);
+            var b = Math.Abs(_position.y - oldPosition.y);
+            var t = a / b;
+
+            var point = oldPosition + t * Velocity;
+            _position = point;
+        }
+
+        private float TimeOfImpactX(float newCoordonate) {
+            var impactX = newCoordonate;
+            var a = impactX - oldPosition.x;
+            var b = _position.x - oldPosition.x;
+            var t = a / b;
+
+            return t;
+        }
+
+        private float TimeOfImpactY(float newCoordonate) {
+            var impactY = newCoordonate;
+            var a = impactY - oldPosition.y;
+            var b = _position.y - oldPosition.y;
+            var t = a / b;
+
+            return t;
         }
 
         // This method is just an example of how to get information about other blocks in the scene.
-        void CheckBlockOverlaps() {
-            MyGame myGame = (MyGame) game;
-            for (int i = 0; i < myGame.GetNumberOfMovers(); i++) {
-                Block other = myGame.GetMover(i);
-                if (other != this) {
-                    if (HitTest(other, out var collisionInfo)) {
-                        ResolveCollision(collisionInfo);
-                        SetFadeColor(0.2f, 0.2f, 1);
-                        other.SetFadeColor(0.2f, 0.2f, 1);
-                        if (wordy) {
-                            Console.WriteLine("Block-block overlap detected.");
-                        }
+        private void CheckBlockOverlaps() {
+            var currentBlock = GetEarliestCollision();
+            if (currentBlock != null) ResetPosition(currentBlock);
+        }
+
+        private Block GetEarliestCollision() {
+            var myGame = (MyGame) game;
+            smallestToi = 2f;
+
+            Block currentBlock = null;
+            for (var i = 0; i < myGame.GetNumberOfMovers(); i++) {
+                var other = myGame.GetMover(i);
+                if (other != this) // TODO: improve hit test, move to method:
+                    if (IsOverlapping(other)) {
+                        var toi = ClaculateToi(other);
+                        currentBlock = SetSmallestToi(currentBlock, other, toi);
                     }
-                }
             }
+
+            return currentBlock;
         }
 
-        public bool HitTest(Block other, out CollisionInfo collisionInfo) {
-            var collides = _position.x < other._position.x + other.width &&
-                           _position.x + width > other._position.x &&
-                           _position.y < other._position.y + other.height &&
-                           _position.y + height > other._position.y;
-
-            var collidesOrigin = _position.x - width / 2f < other._position.x + other.width / 2f &&
-                                 _position.x + width / 2f > other._position.x - other.width / 2f &&
-                                 _position.y - height / 2f < other._position.y + other.height / 2f &&
-                                 _position.y + height / 2f > other._position.y - other.height / 2f;
-
-            // var collides = x + width > other.x &&
-            //                x < other.x + other.width &&
-            //                y < other.y + other.height &&
-            //                y + height > other.y;
-            if (!collidesOrigin) {
-                collisionInfo = null;
-                return false;
+        private Block SetSmallestToi(Block currentBlock, Block other, float toi) {
+            if (toi < smallestToi) {
+                smallestToi = toi;
+                currentBlock = other;
             }
 
-            var overlapX = 0f;
-            var overlapY = 0f;
-            /*
-         // ORIGIN OVERLAP
-         if (_position.x < other._position.x) overlapX = -(_position.x + width/2f - other._position.x + other.width/2f);
-        else overlapX = other._position.x + other.width/2f - _position.x + width/2f;
-        if (_position.y < other._position.y) overlapY = -(_position.y + height/2f - other._position.y + other.height/2f);
-        else overlapY = other._position.y + other.height/2f - _position.y + height/2f;*/
-        
-        
-            // NORMAL OVERLAP
-            if (_position.x < other._position.x) overlapX = -(_position.x + width - other._position.x);
-            else overlapX = other._position.x + other.width - _position.x;
-            if (_position.y < other._position.y) overlapY = -(_position.y + height - other._position.y);
-            else overlapY = other._position.y + other.height - _position.y;
-         
-
-            var TOI = 0f;
-            if (Math.Abs(overlapX) < Math.Abs(overlapY)) {
-                overlapY = 0f;
-                var b = _position.x;
-                var a = _position.x - overlapX;
-                TOI = b / a;
-            } else {
-                overlapX = 0f;
-                var b = _position.y;
-                var a = _position.y - overlapY;
-                TOI = b / a;
-            }
-
-            collisionInfo = new CollisionInfo(new Vec2(overlapX, overlapY).normalized, other, TOI);
-            return true;
+            return currentBlock;
         }
 
-        public void ResolveCollision(CollisionInfo collisionInfo) {
-            // Console.WriteLine(collisionInfo.timeOfImpact);
-            // Reset position
-            _position = _oldPosition + collisionInfo.timeOfImpact * velocity;
-        
-            // Bounce
-            var other = collisionInfo.other as Block;
-            // No Conservation
-            /*if (Math.Abs(collisionInfo.normal.x) > 0.000001f) {
-            velocity.x *= -1;
-            (collisionInfo.other as Block).velocity.x *= -1;
+        private float ClaculateToi(Block other) {
+            var toiX = 2f;
+            var toiY = 2f;
+            if (Velocity.x > 0)
+                toiX = TimeOfImpactX(other.Position.x - other.width / 2 - width / 2);
+            else
+                toiX = TimeOfImpactX(other.Position.x + other.width / 2 + width / 2);
+
+            if (Velocity.y > 0)
+                toiY = TimeOfImpactY(other.Position.y - other.height / 2 - height / 2);
+            else
+                toiY = TimeOfImpactY(other.Position.y + other.height / 2 + height / 2);
+
+            if (Velocity.x == 0f)
+                toiX = toiY;
+
+            if (Velocity.y == 0f)
+                toiY = toiX;
+
+            return Math.Max(toiX, toiY);
         }
 
-        if (Math.Abs(collisionInfo.normal.y) > 0.000001f) {
-            velocity.y *= -1;
-            (collisionInfo.other as Block).velocity.y *= -1;
+        private bool IsOverlapping(Block other) {
+            return _position.x + width / 2 >= other.Position.x - other.width / 2 &&
+                   _position.x - width / 2 <= other.Position.x + other.width / 2 &&
+                   _position.y - height / 2 <= other.Position.y + other.height / 2 &&
+                   _position.y + height / 2 >= other.Position.y - other.height / 2;
         }
-        */
-        
 
+        private void ResetPosition(Block other) {
+            if (IsNotMovingInTheSameDirection(other))
+                ChengeVelocityAndSetPosition(other);
 
-            // Conservation of Momentum
-            var u = (Mass * velocity + other.Mass * other.velocity) / (Mass + other.Mass);
-            var newVel1 = u - bounciness * (velocity - u);
-            var newVel2 = u - bounciness * (other.velocity - u);
-            if (Math.Abs(collisionInfo.normal.x) > 0.000001f) {
-                velocity.x = newVel1.x;
-                other.velocity.x = newVel2.x;
-            }
+            SetFadeColor(0.2f, 0.2f, 1);
+            other.SetFadeColor(0.2f, 0.2f, 1);
+            if (Wordy)
+                Console.WriteLine("Block-block overlap detected.");
+        }
 
-            if (Math.Abs(collisionInfo.normal.y) > 0.000001f) {
-                velocity.y = newVel1.y;
-                other.velocity.y = newVel2.y;
-            }
+        private void ChengeVelocityAndSetPosition(Block other) {
+            var u = (Mass * Velocity + other.Mass * other.Velocity) * (1 / (Mass + other.Mass));
+            Velocity = u - Bounciness * (Velocity - u);
+            other.Velocity = u - Bounciness * (other.Velocity - u);
+            _position = oldPosition + smallestToi * Velocity;
+        }
+
+        private bool IsNotMovingInTheSameDirection(Block other) {
+            return !(Velocity.x > 0 && other.Velocity.x > 0 && Velocity.x < other.Velocity.x ||
+                     Velocity.x < 0 && other.Velocity.x < 0 && Velocity.x > other.Velocity.x) &&
+                   !(Velocity.y > 0 && other.Velocity.y > 0 && Velocity.y < other.Velocity.y ||
+                     Velocity.y < 0 && other.Velocity.y < 0 && Velocity.y > other.Velocity.y);
         }
 
         /******* NO NEED TO CHANGE ANY OF THE CODE BELOW: **********************************************/
 
-        void UpdateColor() {
-            if (_red < 1) {
-                _red = Mathf.Min(1, _red + _colorFadeSpeed);
-            }
+        private void UpdateColor() {
+            if (red < 1)
+                red = Mathf.Min(1, red + colorFadeSpeed);
 
-            if (_green < 1) {
-                _green = Mathf.Min(1, _green + _colorFadeSpeed);
-            }
+            if (green < 1)
+                green = Mathf.Min(1, green + colorFadeSpeed);
 
-            if (_blue < 1) {
-                _blue = Mathf.Min(1, _blue + _colorFadeSpeed);
-            }
+            if (blue < 1)
+                blue = Mathf.Min(1, blue + colorFadeSpeed);
 
-            SetColor(_red, _green, _blue);
+            SetColor(red, green, blue);
         }
 
-        void ShowDebugInfo() {
-            if (drawDebugLine) {
-                ((MyGame) game).DrawLine(_oldPosition, _position);
-            }
+        private void ShowDebugInfo() {
+            if (DrawDebugLine)
+                ((MyGame) game).DrawLine(oldPosition, _position);
 
-            _velocityIndicator.startPoint = _position;
-            _velocityIndicator.vector = velocity;
+            velocityIndicator.startPoint = _position;
+            velocityIndicator.vector = Velocity;
         }
 
-        void UpdateScreenPosition() {
+        private void UpdateScreenPosition() {
             x = _position.x;
             y = _position.y;
         }
 
-        void draw() {
+        private void Draw() {
             Fill(200);
             NoStroke();
             ShapeAlign(CenterMode.Min, CenterMode.Min);
