@@ -1,39 +1,34 @@
-﻿using System;
+﻿using GXPEngine;
+using GXPEngine.Core;
 
-namespace GXPEngine
-{
-	public class Arrow:GameObject
-	{
-		public Vec2 startPoint;
-		public Vec2 vector;
+namespace physics_programming.assignment5.Components {
+    public class Arrow : GameObject {
+        public float ScaleFactor;
 
-		public float scaleFactor;
+        public uint Color = 0xffffffff;
+        public uint LineWidth = 1;
+        public Vec2 StartPoint;
+        public Vec2 Vector;
 
-		public uint color = 0xffffffff;
-		public uint lineWidth = 1;
+        public Arrow(Vec2 pStartPoint, Vec2 pVector, float pScale, uint pColor = 0xffffffff, uint pLineWidth = 1) {
+            StartPoint = pStartPoint;
+            Vector = pVector;
+            ScaleFactor = pScale;
 
-		public Arrow (Vec2 pStartPoint, Vec2 pVector, float pScale, uint pColor = 0xffffffff, uint pLineWidth = 1)
-		{
-			startPoint = pStartPoint;
-			vector = pVector;
-			scaleFactor = pScale;
+            Color = pColor;
+            LineWidth = pLineWidth;
+        }
 
-			color = pColor;
-			lineWidth = pLineWidth;
-		}
+        protected override void RenderSelf(GLContext glContext) {
+            var endPoint = StartPoint + Vector * ScaleFactor;
+            LineSegment.RenderLine(StartPoint, endPoint, Color, LineWidth, true);
 
-		protected override void RenderSelf (GXPEngine.Core.GLContext glContext)
-		{
-			Vec2 endPoint = startPoint + vector * scaleFactor;
-			LineSegment.RenderLine (startPoint, endPoint, color, lineWidth, true);
+            var smallVec = Vector.normalized * -10; // constant length 10, opposite direction of vector
+            var left = new Vec2(-smallVec.y, smallVec.x) + smallVec + endPoint;
+            var right = new Vec2(smallVec.y, -smallVec.x) + smallVec + endPoint;
 
-			Vec2 smallVec = vector.Normalized() * -10; // constant length 10, opposite direction of vector
-			Vec2 left = new Vec2 (-smallVec.y, smallVec.x) + smallVec + endPoint;
-			Vec2 right = new Vec2 (smallVec.y, -smallVec.x) + smallVec + endPoint;
-
-			LineSegment.RenderLine (endPoint, left, color, lineWidth, true);
-			LineSegment.RenderLine (endPoint, right, color, lineWidth, true);			
-		}
-	}
+            LineSegment.RenderLine(endPoint, left, Color, LineWidth, true);
+            LineSegment.RenderLine(endPoint, right, Color, LineWidth, true);
+        }
+    }
 }
-

@@ -130,7 +130,7 @@ namespace physics_programming.assignment4 {
                 }
             }
         }
-        private static void Main() {
+        private static void Main4() {
             new MyGame().Start();
         }
     }
