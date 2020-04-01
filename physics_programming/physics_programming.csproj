@@ -74,10 +74,20 @@
         <Compile Include="assignment5\Components\Arrow.cs" />
         <Compile Include="assignment5\Components\LineSegment.cs" />
         <Compile Include="assignment5\MyGame.cs" />
+        <Compile Include="final_assignment\Ball.cs" />
+        <Compile Include="final_assignment\Barrel.cs" />
+        <Compile Include="final_assignment\Bullet.cs" />
+        <Compile Include="final_assignment\CircleCollider.cs" />
+        <Compile Include="final_assignment\CollisionInfo.cs" />
+        <Compile Include="final_assignment\Components\Arrow.cs" />
+        <Compile Include="final_assignment\Components\LineSegment.cs" />
+        <Compile Include="final_assignment\MyGame.cs" />
+        <Compile Include="final_assignment\Player.cs" />
+        <Compile Include="final_assignment\Utils\CollisionUtils.cs" />
+        <Compile Include="final_assignment\Utils\MathUtils.cs" />
         <Compile Include="Globals.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Tests\Vec2.cs" />
-        <Compile Include="Utils.cs" />
         <Compile Include="Vec2.cs" />
     </ItemGroup>
     <ItemGroup>

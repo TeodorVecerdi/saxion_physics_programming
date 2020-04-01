@@ -1,5 +1,6 @@
 ﻿using System;
 using GXPEngine;
+using physics_programming.final_assignment.Utils;
 
 // TODO: Fix this mess! - see Assignment 2.2
 namespace physics_programming.assignment2 {
@@ -36,7 +37,7 @@ namespace physics_programming.assignment2 {
                 rotationAmount = -1f;
             }
 
-            rotationAmount *= Utils.Map(Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
+            rotationAmount *= MathUtils.Map(Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
             rotation += rotationAmount;
 
             acceleration = Vec2.Right * 0.5f;

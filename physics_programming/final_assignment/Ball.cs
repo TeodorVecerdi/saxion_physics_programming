@@ -2,11 +2,9 @@
 using GXPEngine;
 using physics_programming.assignment5.Components;
 
-namespace physics_programming.assignment5 {
+namespace physics_programming.final_assignment {
     public class Ball : EasyDraw {
         // These four public static fields are changed from MyGame, based on key input (see Console):
-        public static bool DrawDebugLine = false;
-        public static bool Wordy = false;
         public static float Bounciness = 0.98f;
 
         // For ease of testing / changing, we assume every ball has the same acceleration (gravity):
@@ -34,7 +32,6 @@ namespace physics_programming.assignment5 {
             Velocity = pVelocity;
             IsKinematic = isKinematic;
 
-            Position = pPosition;
             UpdateScreenPosition();
             SetOrigin(Radius, Radius);
 
@@ -67,24 +64,15 @@ namespace physics_programming.assignment5 {
 
             var firstBallCollision = FindEarliestBallCollision();
             var firstLineCollision = FindEarliestLineCollision();
-            /* *** FIRST COLLISION WITH LINE AND BALL SEPARATE *** */
-            /*
-            if(firstBallCollision != null) ResolveCollision(firstBallCollision);
-            if(firstLineCollision != null) ResolveCollision(firstLineCollision);
-            */
-
-            /* *** FIRST COLLISION WITH LINE AND BALL COMBINED *** */
-            // /*
             var lineTOI = firstLineCollision?.TimeOfImpact ?? Mathf.Infinity;
             var ballTOI = firstBallCollision?.TimeOfImpact ?? Mathf.Infinity;
             if (lineTOI < ballTOI) {
-                if(firstLineCollision != null) ResolveCollision(firstLineCollision);
+                if (firstLineCollision != null) ResolveCollision(firstLineCollision);
                 else if (firstBallCollision != null) ResolveCollision(firstBallCollision);
-            } else  {
+            } else {
                 if (firstBallCollision != null) ResolveCollision(firstBallCollision);
-                else if(firstLineCollision != null) ResolveCollision(firstLineCollision);
+                else if (firstLineCollision != null) ResolveCollision(firstLineCollision);
             }
-            // */
 
             UpdateScreenPosition();
             ShowDebugInfo();
@@ -128,18 +116,15 @@ namespace physics_programming.assignment5 {
         private CollisionInfo FindEarliestLineCollision() {
             var myGame = (MyGame) game;
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
-
             // Check other movers:			
             for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
                 var line = myGame.GetLine(i);
-
                 var segmentVec = line.End - line.Start;
                 var normalizedSegmentVec = segmentVec.normalized;
                 var segmentLengthSqr = segmentVec.sqrMagnitude;
                 var normal = segmentVec.Normal();
-                // Start of line
                 var ballDiff = Position - line.Start;
-
+                
                 // Calculate time of impact
                 var a = normal.Dot(ballDiff) - Radius;
                 var b = -normal.Dot(Velocity);
@@ -170,52 +155,29 @@ namespace physics_programming.assignment5 {
 
         private void ResolveCollision(CollisionInfo col) {
             if (col.Other == null) {
-                if(Wordy) Console.WriteLine($"Line|CollisionInfo{{TOI: {col.TimeOfImpact}, NORMAL: {col.Normal}}}");
                 // Line collision
                 Position = oldPosition + Velocity * col.TimeOfImpact;
                 Velocity.Reflect(col.Normal, Bounciness);
             } else {
                 if (!(col.Other is Ball other)) return;
-                if(Wordy) Console.WriteLine($"Ball|CollisionInfo{{TOI: {col.TimeOfImpact}, NORMAL: {col.Normal}}}");
-
                 Position = oldPosition + Velocity * col.TimeOfImpact;
                 Velocity.Reflect(col.Normal, Bounciness);
-                
-                if(other.IsKinematic) return;
-                
-                other.Velocity.Reflect(-col.Normal, Bounciness);
-                
+                if (other.IsKinematic) return;
+                other.Velocity.Reflect(col.Normal, Bounciness);
+
                 // Attempt 1
                 /*var u = (Mass * Velocity + other.Mass * other.Velocity) * (1 / (Mass + other.Mass));
                 Velocity = u - Bounciness * (Velocity - u);
                 other.Velocity = u - Bounciness * (other.Velocity - u);*/
-                
+
                 // Attempt 2
                 /*var diff = Position - other.Position;
                 diff.Normalize();
                 Velocity += diff * (other.Mass / (Mass + other.Mass));
                 other.Velocity -= diff * (Mass / (Mass + other.Mass));*/
-                
-                
-            } /*
-
-            // TODO: resolve the collision correctly: position reset & velocity reflection.
-            // ...this is not an ideal collision resolve:
-            Velocity *= -1;
-            if (col.Other is Ball) {
-                var otherBall = (Ball) col.Other;
-                otherBall.Velocity *= -1;
-            }*/
+            }
         }
-
-        /// <summary>
-        /// Discrete collision detection and resolve between ball and line segment
-        /// </summary>
-
         private void ShowDebugInfo() {
-            if (DrawDebugLine)
-                ((MyGame) game).DrawLine(oldPosition, Position);
-
             velocityIndicator.StartPoint = Position;
             velocityIndicator.Vector = Velocity;
         }

@@ -68,7 +68,7 @@ namespace physics_programming {
 
         public float GetAngleRadians() {
             var n = normalized;
-            var angle = Mathf.Acos(n.x);
+            var angle = Mathf.Atan2(n.y, n.x);
             return angle;
         }
 
@@ -117,6 +117,10 @@ namespace physics_programming {
             return GetUnitVectorRad(rad);
         }
 
+        public static float AngleBetween(Vec2 a, Vec2 b) {
+            return Mathf.Acos(a.Dot(b) / (a.magnitude * b.magnitude));
+        }
+
         public static Vec2 operator +(Vec2 a, Vec2 b) {
             return new Vec2(a.x + b.x, a.y + b.y);
         }
@@ -148,6 +152,10 @@ namespace physics_programming {
 
         public static bool operator !=(Vec2 a, Vec2 b) {
             return !a.Equals(b);
+        }
+
+        public static Vec2 operator -(Vec2 a) {
+            return new Vec2(-a.x, -a.y);
         }
 
         public bool Equals(Vec2 other) {

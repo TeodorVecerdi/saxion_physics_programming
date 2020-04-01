@@ -1,5 +1,5 @@
-namespace physics_programming {
-    public static class Utils {
+namespace physics_programming.final_assignment.Utils {
+    public static class MathUtils {
         /// <summary>
         ///     Returns <paramref name="value" /> mapped from one range [<paramref name="minA" />, <paramref name="maxA" />] to
         ///     another range [<paramref name="minB" />, <paramref name="maxB" />]

@@ -213,7 +213,7 @@ namespace physics_programming.assignment5 {
                 StepThroughMovers();
         }
 
-        private static void Main() {
+        private static void Main5() {
             new MyGame().Start();
         }
     }
