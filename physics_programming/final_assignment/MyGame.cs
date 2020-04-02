@@ -141,9 +141,14 @@ namespace physics_programming.final_assignment {
             AddLine(new Vec2(0, 0), new Vec2(width, 0));
             AddLine(new Vec2(width, height), new Vec2(0, height));
 
+            AddDestructibleLine(new Vec2(100, 200), new Vec2(50, 500));
+            AddDestructibleLine(new Vec2(50, 500), new Vec2(49, 600));
             AddDestructibleLine(new Vec2(100, 200), new Vec2(500, 250));
             AddDestructibleLine(new Vec2(100, 175), new Vec2(500, 225));
-            AddDestructibleLine(new Vec2(100, 200), new Vec2(50, 500));
+            AddDestructibleLine(new Vec2(500, 250), new Vec2(550, 300));
+            AddDestructibleLine(new Vec2(550, 300), new Vec2(600, 375));
+            AddDestructibleLine(new Vec2(600, 375), new Vec2(625, 475));
+            AddDestructibleLine(new Vec2(625, 475), new Vec2(626, 600));
 
             Ball.Acceleration.SetXY(0, 0);
 

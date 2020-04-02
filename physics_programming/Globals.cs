@@ -16,8 +16,8 @@ namespace physics_programming {
         public static int HEIGHT => USE_ASPECT_RATIO ? H_ASPECT : H_MAIN;
 
         public static class World {
-            public const float BulletDLSDamage = 5f;
-            public const float DestructibleLineMinLength = 10f;
+            public const float BulletDLSDamage = 10;
+            public const float DestructibleLineMinLength = 10;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace physics_programming.final_assignment {
         public readonly CircleCollider EndCollider;
 
         public DoubleDestructibleLineSegment(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1) {
-            SideA = new DestructibleLineSegment(start, end, color, lineWidth);
-            SideB = new DestructibleLineSegment(end, start, color, lineWidth);
+            SideA = new DestructibleLineSegment(start, end, 0xffff0000, lineWidth);
+            SideB = new DestructibleLineSegment(end, start, 0xff0000ff, lineWidth);
             AddChild(SideA);
             AddChild(SideB);
             StartCollider = new CircleCollider(0, start, true);

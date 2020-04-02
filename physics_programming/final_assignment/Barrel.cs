@@ -17,7 +17,7 @@ namespace physics_programming.final_assignment {
             if (shortestAngle > 180)
                 shortestAngle -= 360;
             if(Math.Abs(rotation - desiredRotation) > 0.5)
-                rotation += shortestAngle * 0.05f;
+                rotation += shortestAngle * 0.15f;
         }
     }
 }
