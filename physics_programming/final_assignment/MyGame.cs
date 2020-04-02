@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using GXPEngine;
 using physics_programming.final_assignment.Components;
@@ -10,6 +11,7 @@ namespace physics_programming.final_assignment {
         private readonly List<Ball> movers;
         private readonly List<Bullet> bullets;
         private readonly List<LineSegment> lines;
+        public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
         private bool paused;
         private bool stepped;
 
@@ -22,6 +24,7 @@ namespace physics_programming.final_assignment {
             movers = new List<Ball>();
             lines = new List<LineSegment>();
             bullets = new List<Bullet>();
+            DestructibleLines = new List<DoubleDestructibleLineSegment>();
 
             Restart();
             PrintInfo();
@@ -47,15 +50,26 @@ namespace physics_programming.final_assignment {
             return null;
         }
 
-        private void AddLine(Vec2 start, Vec2 end, bool addReverseLine = false, bool addLineEndings = true) {
-            var line = new LineSegment(start, end, 0xff00ff00, 4);
+        private void AddLine(Vec2 start, Vec2 end, bool addReverseLine = false, bool addLineEndings = true, uint color = 0xff00ff00) {
+            var line = new LineSegment(start, end, color, 4);
             AddChild(line);
             lines.Add(line);
             if (addReverseLine) {
-                var reverseLine = new LineSegment(end, start, 0xff00ff00, 4);
+                var reverseLine = new LineSegment(end, start, color, 4);
                 AddChild(reverseLine);
                 lines.Add(reverseLine);
             }
+
+            if (addLineEndings) {
+                movers.Add(new Ball(0, start, isKinematic: true));
+                movers.Add(new Ball(0, end, isKinematic: true));
+            }
+        }
+
+        private void AddDestructibleLine(Vec2 start, Vec2 end, bool addLineEndings = true, uint color = 0xff00ff00) {
+            var line = new DoubleDestructibleLineSegment(start, end, color, 2);
+            AddChild(line);
+            DestructibleLines.Add(line);
 
             if (addLineEndings) {
                 movers.Add(new Ball(0, start, isKinematic: true));
@@ -94,6 +108,12 @@ namespace physics_programming.final_assignment {
                 paused ^= true;
             if (Input.GetKeyDown(Key.R))
                 Restart();
+
+            if (Input.GetKeyDown(Key.T)) {
+                foreach (var line in DestructibleLines) {
+                    Console.WriteLine($"Line Size: {(line.SideA.End - line.SideA.Start).magnitude}");
+                }
+            }
         }
 
         private void Restart() {
@@ -109,6 +129,10 @@ namespace physics_programming.final_assignment {
                 bullet.Destroy();
             bullets.Clear();
 
+            foreach (var destructibleLine in DestructibleLines)
+                destructibleLine.Destroy();
+            DestructibleLines.Clear();
+
             player = new Player(500, 400, 3);
             AddChild(player);
 
@@ -116,6 +140,10 @@ namespace physics_programming.final_assignment {
             AddLine(new Vec2(width, 0), new Vec2(width, height));
             AddLine(new Vec2(0, 0), new Vec2(width, 0));
             AddLine(new Vec2(width, height), new Vec2(0, height));
+
+            AddDestructibleLine(new Vec2(100, 200), new Vec2(500, 250));
+            AddDestructibleLine(new Vec2(100, 175), new Vec2(500, 225));
+            AddDestructibleLine(new Vec2(100, 200), new Vec2(50, 500));
 
             Ball.Acceleration.SetXY(0, 0);
 
@@ -132,11 +160,27 @@ namespace physics_programming.final_assignment {
                 if (!movers[stepIndex].IsKinematic)
                     movers[stepIndex].Step();
             } else movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
+            
+            UpdateBullets();
+            UpdateDestructibleLines();
+        }
 
+        private void UpdateBullets() {
             foreach (var bullet in bullets) bullet.Step();
+            bullets.Where(b => b.Dead).ToList().ForEach(bullet => {
+                bullet.Destroy();
+                bullets.Remove(bullet);
+            });
+        }
 
-            bullets.Where(b => b.Dead).ToList().ForEach(RemoveChild);
-            bullets.RemoveAll(bullet => bullet.Dead);
+        private void UpdateDestructibleLines() {
+            var minSizeSqr = Globals.World.DestructibleLineMinLength * 1.5f;
+            minSizeSqr *= minSizeSqr;
+            DestructibleLines.Where(l => l.ShouldRemove || (l.SideA.End - l.SideA.Start).sqrMagnitude <= minSizeSqr)
+                .ToList().ForEach(l => {
+                    l.Destroy();
+                    DestructibleLines.Remove(l);
+                });
         }
 
         [SuppressMessage("ReSharper", "UnusedMember.Local")]

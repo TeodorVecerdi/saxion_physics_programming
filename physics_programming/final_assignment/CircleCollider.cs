@@ -1,4 +1,7 @@
-﻿using GXPEngine;
+﻿using System;
+using System.Drawing;
+using GXPEngine;
+using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class CircleCollider : EasyDraw {
@@ -7,13 +10,17 @@ namespace physics_programming.final_assignment {
         public Vec2 Position;
 
         private bool isVisible;
-        private Vec2 oldPosition;
-        
+        public Vec2 OldPosition;
+
         public bool IsVisible {
             get => isVisible;
             set {
                 isVisible = value;
-                Draw(0x00, 0xff, 0x00, isVisible ? (byte) 0xff : (byte) 0x00);
+                if (isVisible) {
+                    Draw(0x00, 0xff, 0x00);
+                } else {
+                    Clear(Color.Transparent);
+                }
             }
         }
 
@@ -26,12 +33,11 @@ namespace physics_programming.final_assignment {
             SetOrigin(Radius, Radius);
 
             IsVisible = isVisible;
-            Draw(0, 255, 0);
         }
 
-        private void Draw(byte red, byte green, byte blue, byte alpha = 0xff) {
+        private void Draw(byte red, byte green, byte blue) {
             NoFill();
-            Stroke(red, green, blue, alpha);
+            Stroke(red, green, blue);
             Ellipse(Radius, Radius, 2 * Radius, 2 * Radius);
         }
 
@@ -40,47 +46,53 @@ namespace physics_programming.final_assignment {
             y = Position.y;
         }
 
-        public void Step() {
-            // Position = parentPosition + offset;
-            UpdateScreenPosition();
-        }
-
-        public CollisionInfo FindEarliestLineCollision(Vec2 parentVelocity) {
+        public CollisionInfo FindEarliestDestructibleLineCollision(Vec2 parentPosition, Vec2 parentVelocity, Vec2 parentOldPosition, float parentRotation) {
             var myGame = (MyGame) game;
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
 
-            // Check other movers:			
+            var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
+            var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
+
+            foreach (var line in myGame.DestructibleLines) {
+                var collInfo = CollisionUtils.CircleDestructibleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, line);
+                if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
+                    collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
+            }
+            return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
+        }
+
+        public CollisionInfo FindEarliestLineCollision(Vec2 parentPosition, Vec2 parentVelocity, Vec2 parentOldPosition, float parentRotation) {
+            var myGame = (MyGame) game;
+            var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
+            
+            var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
+            var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
+
             for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
                 var line = myGame.GetLine(i);
-                var segmentVec = line.End - line.Start;
-                var normalizedSegmentVec = segmentVec.normalized;
-                var segmentLengthSqr = segmentVec.sqrMagnitude;
-                var normal = segmentVec.Normal();
-                var positionDifference = Position - line.Start;
-
-                // Calculate time of impact
-                var a = normal.Dot(positionDifference) - Radius;
-                var b = -normal.Dot(parentVelocity);
-                float t;
-                if (b < 0) continue;
-                if (a >= 0)
-                    t = a / b;
-                else if (a >= -Radius)
-                    t = 0;
-                else
-                    continue;
-
-                if (t > 1f) continue;
-
-                var pointOfImpact = oldPosition + parentVelocity * t;
-                var newDiff = pointOfImpact - line.Start;
-                var distanceAlongLine = newDiff.Dot(normalizedSegmentVec);
-                if (distanceAlongLine >= 0 && distanceAlongLine * distanceAlongLine <= segmentLengthSqr)
-                    if (t < collisionInfo.TimeOfImpact)
-                        collisionInfo = new CollisionInfo(normal, null, t);
+                var collInfo = CollisionUtils.CircleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, line);
+                if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
+                    collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
             }
-
             return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
+        }
+
+        public static ValueTuple<Vec2, Vec2> LocalToWorldCoords(Vec2 position, Vec2 oldPosition, Vec2 parentPosition, Vec2 parentOldPosition) {
+            return ValueTuple.Create(position + parentPosition, oldPosition + parentOldPosition);
+        }
+
+        public static ValueTuple<Vec2, Vec2> ApplyRotation(Vec2 position, Vec2 parentPosition, Vec2 oldPosition, Vec2 parentOldPosition, float parentRotation) {
+            parentRotation *= Mathf.Deg2Rad;
+            var sin = Mathf.Sin(parentRotation);
+            var cos = Mathf.Cos(parentRotation);
+            var newCircleX = (position.x - parentPosition.x) * cos - (position.y - parentPosition.y) * sin + parentPosition.x;
+            var newCircleY = (position.x - parentPosition.x) * sin - (position.y - parentPosition.y) * cos + parentPosition.y;
+            var newPos = new Vec2(newCircleX, newCircleY);
+
+            var newCircleOldX = (oldPosition.x - parentOldPosition.x) * cos - (oldPosition.y - parentOldPosition.y) * sin + parentOldPosition.x;
+            var newCircleOldY = (oldPosition.x - parentOldPosition.x) * sin - (oldPosition.y - parentOldPosition.y) * cos + parentOldPosition.y;
+            var newOldPos = new Vec2(newCircleOldX, newCircleOldY);
+            return ValueTuple.Create(newPos, newOldPos);
         }
     }
 }

@@ -99,7 +99,7 @@ namespace physics_programming {
         public static float Deg2Rad(float degrees) {
             return degrees / 180.0f * Mathf.PI;
         }
-        
+
         public static float Rad2Deg(float radians) {
             return radians * 180.0f / Mathf.PI;
         }
@@ -117,8 +117,27 @@ namespace physics_programming {
             return GetUnitVectorRad(rad);
         }
 
-        public static float AngleBetween(Vec2 a, Vec2 b) {
-            return Mathf.Acos(a.Dot(b) / (a.magnitude * b.magnitude));
+        /// <summary>
+        /// Projects a point on a line segment
+        /// </summary>
+        /// <param name="q">Point to project</param>
+        /// <param name="p0">Start of line segment</param>
+        /// <param name="p1">End of line segment</param>
+        /// <returns><paramref name="q"/> projected on the line segment from <paramref name="p0"/> to <paramref name="p1"/></returns>
+        public static Vec2 ProjectPointOnLineSegment(Vec2 q, Vec2 p0, Vec2 p1) {
+            var a = p1.x - p0.x;
+            var b = p1.y - p0.y;
+            var c = p0.y - p1.y;
+
+            var pYN = p0.y*a - p0.x*b - q.x*c - q.y * (c*b/a);
+            var pYD = a - c*b/a;
+            var pY = pYN / pYD;
+
+            var pXN = q.x * a + q.y * b - pY * b;
+            var pXD = a;
+            var pX = pXN / pXD;
+            
+            return new Vec2(pX, pY);
         }
 
         public static Vec2 operator +(Vec2 a, Vec2 b) {
@@ -176,13 +195,13 @@ namespace physics_programming {
             return $"({x},{y})";
         }
 
-        public static readonly Vec2 Zero = new Vec2(0f, 0f); 
-        public static readonly Vec2 One = new Vec2(1f, 1f); 
-        public static readonly Vec2 Left = new Vec2(-1f, 0f); 
+        public static readonly Vec2 Zero = new Vec2(0f, 0f);
+        public static readonly Vec2 One = new Vec2(1f, 1f);
+        public static readonly Vec2 Left = new Vec2(-1f, 0f);
         public static readonly Vec2 Right = new Vec2(1f, 0f);
-        public static readonly Vec2 Up = new Vec2(0f, -1f); 
-        public static readonly Vec2 Down = new Vec2(0f, 1f); 
-        public static readonly Vec2 PositiveInfinity = new Vec2(float.PositiveInfinity, float.PositiveInfinity); 
-        public static readonly Vec2 NegativeInfinity = new Vec2(float.NegativeInfinity, float.NegativeInfinity); 
+        public static readonly Vec2 Up = new Vec2(0f, -1f);
+        public static readonly Vec2 Down = new Vec2(0f, 1f);
+        public static readonly Vec2 PositiveInfinity = new Vec2(float.PositiveInfinity, float.PositiveInfinity);
+        public static readonly Vec2 NegativeInfinity = new Vec2(float.NegativeInfinity, float.NegativeInfinity);
     }
 }

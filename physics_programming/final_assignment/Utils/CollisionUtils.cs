@@ -1,3 +1,5 @@
+using System;
+using GXPEngine;
 using physics_programming.final_assignment.Components;
 
 namespace physics_programming.final_assignment.Utils {
@@ -30,6 +32,64 @@ namespace physics_programming.final_assignment.Utils {
             }
 
             return null;
+        }
+        
+        public static CollisionInfo CircleDestructibleLineCollision(Vec2 circlePosition, Vec2 oldCirclePosition, Vec2 circleVelocity, float circleRadius, DoubleDestructibleLineSegment line, bool doEdges = true) {
+            var collisionInfoSideA = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity, circleRadius, new LineSegment(line.SideA.Start, line.SideA.End));
+            var collisionInfoSideB = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity, circleRadius, new LineSegment(line.SideB.Start, line.SideB.End));
+            CollisionInfo collisionInfoEdge = null; 
+            if (doEdges) {
+                var collisionInfoEdgeA = CircleCircleCollision(circlePosition, oldCirclePosition, circleVelocity, circleRadius, line.StartCollider.Position, line.StartCollider.Radius);
+                var collisionInfoEdgeB = CircleCircleCollision(circlePosition, oldCirclePosition, circleVelocity, circleRadius, line.EndCollider.Position, line.EndCollider.Radius);
+                if (collisionInfoEdgeA != null || collisionInfoEdgeB != null) {
+                    collisionInfoEdge = collisionInfoEdgeA ?? collisionInfoEdgeB;
+                }
+            }
+            if (collisionInfoSideA != null || collisionInfoSideB != null) {
+                var collisionInfo = collisionInfoSideA ?? collisionInfoSideB;
+                if (doEdges && collisionInfoEdge != null && collisionInfoEdge.TimeOfImpact < collisionInfo.TimeOfImpact) {
+                    return collisionInfoEdge;
+                }
+                return collisionInfo;
+            }
+
+            if (doEdges && collisionInfoEdge != null) {
+                return collisionInfoEdge;
+            }
+            return null;
+        }
+
+        public static (DoubleDestructibleLineSegment, DoubleDestructibleLineSegment) BulletLineCollision(Bullet bullet, DoubleDestructibleLineSegment line) {
+            var collisionInfo = CircleDestructibleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity, bullet.Radius, line, false);
+            if (collisionInfo != null) {
+                var pointOfImpact = bullet.OldPosition + bullet.Velocity * collisionInfo.TimeOfImpact;
+                // Project point of impact on line
+                var projectedPoint = Vec2.ProjectPointOnLineSegment(pointOfImpact, line.SideA.Start, line.SideA.End);
+                
+                var splitSegments = DoubleDestructibleLineSegment.Split(line, projectedPoint, Globals.World.BulletDLSDamage);
+                return splitSegments;
+            }
+            return ValueTuple.Create<DoubleDestructibleLineSegment, DoubleDestructibleLineSegment>(null, null);
+        }
+
+        public static CollisionInfo CircleCircleCollision(Vec2 position, Vec2 oldPosition, Vec2 velocity, float radius, Vec2 otherPosition, float otherRadius) {
+            var u = position - otherPosition;
+            var dot = u.Dot(velocity);
+            var radiusSquared = (radius + otherRadius) * (radius + otherRadius);
+            var uLengthSquared = u.sqrMagnitude;
+            var vLengthSquared = velocity.sqrMagnitude;
+
+            // quadratic
+            var delta = 4 * dot * dot - 4 * vLengthSquared * (uLengthSquared - radiusSquared);
+            if (delta < 0) return null;
+            var upper = -2 * dot - Mathf.Sqrt(delta);
+            var lower = 2 * vLengthSquared;
+            var t = upper / lower;
+            if (t < 0 || t > 1) return null;
+
+            var pointOfImpact = oldPosition + velocity * t;
+            var normal = (pointOfImpact - otherPosition).normalized;
+            return new CollisionInfo(normal, null, t);
         }
     }
 }
