@@ -11,11 +11,11 @@ namespace physics_programming.final_assignment {
         public Vec2 End;
         public Vec2 Start;
 
-        public DestructibleLineSegment(Vec2 pStart, Vec2 pEnd, uint pColor = 0xffffffff, uint pLineWidth = 1) {
-            Start = pStart;
-            End = pEnd;
-            Color = pColor;
-            LineWidth = pLineWidth;
+        public DestructibleLineSegment(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1) {
+            Start = start;
+            End = end;
+            Color = color;
+            LineWidth = lineWidth;
         }
 
         //------------------------------------------------------------------------------------------------------------------------

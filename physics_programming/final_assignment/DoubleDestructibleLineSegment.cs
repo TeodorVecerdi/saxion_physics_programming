@@ -5,18 +5,18 @@ using GXPEngine.Core;
 namespace physics_programming.final_assignment {
     public class DoubleDestructibleLineSegment : GameObject {
         public bool ShouldRemove;
-        public DestructibleLineSegment SideA;
-        public DestructibleLineSegment SideB;
-        public CircleCollider StartCollider;
-        public CircleCollider EndCollider;
+        public readonly DestructibleLineSegment SideA;
+        public readonly DestructibleLineSegment SideB;
+        public readonly CircleCollider StartCollider;
+        public readonly CircleCollider EndCollider;
 
-        public DoubleDestructibleLineSegment(Vec2 pStart, Vec2 pEnd, uint pColor = 0xffffffff, uint pLineWidth = 1) {
-            SideA = new DestructibleLineSegment(pStart, pEnd, pColor, pLineWidth);
-            SideB = new DestructibleLineSegment(pEnd, pStart, pColor, pLineWidth);
+        public DoubleDestructibleLineSegment(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1) {
+            SideA = new DestructibleLineSegment(start, end, color, lineWidth);
+            SideB = new DestructibleLineSegment(end, start, color, lineWidth);
             AddChild(SideA);
             AddChild(SideB);
-            StartCollider = new CircleCollider(0, pStart, true);
-            EndCollider = new CircleCollider(0, pEnd, true);
+            StartCollider = new CircleCollider(0, start, true);
+            EndCollider = new CircleCollider(0, end, true);
             AddChild(StartCollider);
             AddChild(EndCollider);
         }

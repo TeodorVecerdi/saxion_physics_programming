@@ -7,20 +7,19 @@ namespace physics_programming.final_assignment {
     public class CircleCollider : EasyDraw {
         public readonly bool IsKinematic;
         public readonly int Radius;
+        public Vec2 OldPosition;
         public Vec2 Position;
 
         private bool isVisible;
-        public Vec2 OldPosition;
 
         public bool IsVisible {
             get => isVisible;
             set {
                 isVisible = value;
-                if (isVisible) {
+                if (isVisible)
                     Draw(0x00, 0xff, 0x00);
-                } else {
+                else
                     Clear(Color.Transparent);
-                }
             }
         }
 
@@ -58,13 +57,14 @@ namespace physics_programming.final_assignment {
                 if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
             }
+
             return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
         }
 
         public CollisionInfo FindEarliestLineCollision(Vec2 parentPosition, Vec2 parentVelocity, Vec2 parentOldPosition, float parentRotation) {
             var myGame = (MyGame) game;
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
-            
+
             var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
             var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
 
@@ -74,6 +74,7 @@ namespace physics_programming.final_assignment {
                 if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
             }
+
             return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
         }
 

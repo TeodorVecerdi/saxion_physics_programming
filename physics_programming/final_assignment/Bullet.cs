@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GXPEngine;
-using NUnit.Framework;
 using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class Bullet : Sprite {
+        public const float Bounciness = 0.95f;
+
+        public readonly float Radius;
+        public bool Dead;
         public Vec2 OldPosition;
-        private int bouncesLeft;
 
         public Vec2 Position;
         public Vec2 Velocity;
-        public const float Bounciness = 0.95f;
-        
-        public float Radius;
-        public float Mass => Radius * Radius;
-        public bool Dead;
+        private int bouncesLeft;
 
         public Bullet(Vec2 position, Vec2 velocity, int maxBounces = 0, int radius = 2) : base("data/assets/bullet.png") {
             Position = position;
             Velocity = velocity;
             bouncesLeft = maxBounces;
             Radius = radius;
-            
+
             UpdateScreenPosition();
             SetOrigin(Radius, Radius);
-
         }
 
         private void UpdateScreenPosition() {
@@ -46,16 +42,17 @@ namespace physics_programming.final_assignment {
                     ResolveCollision(lineCollision);
                 }
             }
-            
+
             // Destructible collisions
             var linesToAdd = new List<DoubleDestructibleLineSegment>();
             foreach (var destructibleLine in g.DestructibleLines) {
                 var (line1, line2) = CollisionUtils.BulletLineCollision(this, destructibleLine);
-                if(line1 == null && line2 == null) continue;
+                if (line1 == null && line2 == null) continue;
                 destructibleLine.ShouldRemove = true;
                 if (line1 != null) linesToAdd.Add(line1);
                 if (line2 != null) linesToAdd.Add(line2);
             }
+
             linesToAdd.ForEach(line => {
                 g.DestructibleLines.Add(line);
                 g.AddChild(line);
@@ -71,21 +68,19 @@ namespace physics_programming.final_assignment {
             for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
                 var line = myGame.GetLine(i);
                 var currentCollisionInfo = CollisionUtils.CircleLineCollision(Position, OldPosition, Velocity, Radius, line);
-                if (currentCollisionInfo != null && currentCollisionInfo.TimeOfImpact < collisionInfo.TimeOfImpact) {
+                if (currentCollisionInfo != null && currentCollisionInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(currentCollisionInfo.Normal, null, currentCollisionInfo.TimeOfImpact);
-                }
             }
+
             return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
         }
 
-        private void ResolveCollision(CollisionInfo col) {
-            if (col.Other == null) {
+        private void ResolveCollision(CollisionInfo collisionInfo) {
+            if (collisionInfo.Other == null) {
                 // Line collision
-                Position = OldPosition + Velocity * col.TimeOfImpact;
-                Velocity.Reflect(col.Normal, Bounciness);
+                Position = OldPosition + Velocity * collisionInfo.TimeOfImpact;
+                Velocity.Reflect(collisionInfo.Normal, Bounciness);
                 rotation = Velocity.GetAngleDegrees();
-            } else {
-                // TODO: Implement Bullet-Enemy Collision later
             }
         }
     }

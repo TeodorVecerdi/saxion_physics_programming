@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GXPEngine;
@@ -9,9 +8,9 @@ namespace physics_programming.final_assignment {
     public class Player : Sprite {
         public Vec2 Position;
         public Vec2 Velocity;
+        private readonly Barrel barrel;
 
         private readonly float maxVelocity;
-        private readonly Barrel barrel;
         private readonly List<CircleCollider> colliders;
 
         private Vec2 acceleration;
@@ -91,9 +90,8 @@ namespace physics_programming.final_assignment {
             colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity, oldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
-            if (!float.IsPositiveInfinity(collisionInfo.TimeOfImpact)) {
+            if (!float.IsPositiveInfinity(collisionInfo.TimeOfImpact))
                 Position = oldPosition + Velocity * (collisionInfo.TimeOfImpact - 0.00001f);
-            }
             Shoot();
             UpdateScreenPosition();
         }

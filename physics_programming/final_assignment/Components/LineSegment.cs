@@ -3,24 +3,17 @@ using GXPEngine.Core;
 using GXPEngine.OpenGL;
 
 namespace physics_programming.final_assignment.Components {
-    /// <summary>
-    ///     Implements an OpenGL line
-    /// </summary>
     public class LineSegment : GameObject {
-        //stay in this object's coordinate space or interpret vectors as screen coordinates?
-        public uint Color = 0xffffffff;
-        public uint LineWidth = 1;
+        public readonly uint Color;
+        public readonly uint LineWidth;
         public Vec2 End;
         public Vec2 Start;
 
-        public LineSegment(float pStartX, float pStartY, float pEndX, float pEndY, uint pColor = 0xffffffff, uint pLineWidth = 1)
-            : this(new Vec2(pStartX, pStartY), new Vec2(pEndX, pEndY), pColor, pLineWidth) { }
-
-        public LineSegment(Vec2 pStart, Vec2 pEnd, uint pColor = 0xffffffff, uint pLineWidth = 1) {
-            Start = pStart;
-            End = pEnd;
-            Color = pColor;
-            LineWidth = pLineWidth;
+        public LineSegment(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1) {
+            Start = start;
+            End = end;
+            Color = color;
+            LineWidth = lineWidth;
         }
 
         //------------------------------------------------------------------------------------------------------------------------
@@ -32,16 +25,16 @@ namespace physics_programming.final_assignment.Components {
             }
         }
 
-        public static void RenderLine(Vec2 pStart, Vec2 pEnd, uint pColor = 0xffffffff, uint pLineWidth = 1, bool pUseGlobalCoords = false) {
-            RenderLine(pStart.x, pStart.y, pEnd.x, pEnd.y, pColor, pLineWidth, pUseGlobalCoords);
+        public static void RenderLine(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1, bool useGlobalCoords = false) {
+            RenderLine(start.x, start.y, end.x, end.y, color, lineWidth, useGlobalCoords);
         }
 
-        public static void RenderLine(float pStartX, float pStartY, float pEndX, float pEndY, uint pColor = 0xffffffff, uint pLineWidth = 1, bool pUseGlobalCoords = false) {
-            if(pUseGlobalCoords) GL.LoadIdentity();
+        public static void RenderLine(float startX, float startY, float endX, float endY, uint color = 0xffffffff, uint lineWidth = 1, bool useGlobalCoords = false) {
+            if(useGlobalCoords) GL.LoadIdentity();
             GL.Disable(GL.TEXTURE_2D);
-            GL.LineWidth(pLineWidth);
-            GL.Color4ub((byte) ((pColor >> 16) & 0xff), (byte) ((pColor >> 8) & 0xff), (byte) (pColor & 0xff), (byte) ((pColor >> 24) & 0xff));
-            float[] vertices = {pStartX, pStartY, pEndX, pEndY};
+            GL.LineWidth(lineWidth);
+            GL.Color4ub((byte) ((color >> 16) & 0xff), (byte) ((color >> 8) & 0xff), (byte) (color & 0xff), (byte) ((color >> 24) & 0xff));
+            float[] vertices = {startX, startY, endX, endY};
             GL.EnableClientState(GL.VERTEX_ARRAY);
             GL.VertexPointer(2, GL.FLOAT, 0, vertices);
             GL.DrawArrays(GL.LINES, 0, 2);

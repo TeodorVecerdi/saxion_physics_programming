@@ -160,7 +160,7 @@ namespace physics_programming.final_assignment {
                 if (!movers[stepIndex].IsKinematic)
                     movers[stepIndex].Step();
             } else movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
-            
+
             UpdateBullets();
             UpdateDestructibleLines();
         }
