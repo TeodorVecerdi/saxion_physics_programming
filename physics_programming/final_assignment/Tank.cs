@@ -43,14 +43,14 @@ namespace physics_programming.final_assignment {
 
         private void Collisions() {
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
-            colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity, OldPosition, rotation))
+            colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
-            colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity, OldPosition, rotation))
+            colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
             if (!float.IsPositiveInfinity(collisionInfo.TimeOfImpact))
-                Position = OldPosition + Velocity * (collisionInfo.TimeOfImpact - 0.00001f);
+                Position = OldPosition + Time.deltaTime * (collisionInfo.TimeOfImpact - 0.00001f) * Velocity;
         }
 
         private void UpdateScreenPosition() {

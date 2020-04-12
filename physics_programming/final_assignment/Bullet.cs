@@ -5,6 +5,7 @@ using physics_programming.final_assignment.Utils;
 namespace physics_programming.final_assignment {
     public class Bullet : Sprite {
         public const float Bounciness = 0.95f;
+        public const float Speed = 500f;
 
         public readonly float Radius;
         public bool Dead;
@@ -16,7 +17,7 @@ namespace physics_programming.final_assignment {
 
         public Bullet(Vec2 position, Vec2 velocity, int maxBounces = 0, int radius = 2) : base("data/assets/bullet.png") {
             Position = position;
-            Velocity = velocity;
+            Velocity = velocity * Speed;
             bouncesLeft = maxBounces;
             Radius = radius;
 
@@ -32,7 +33,7 @@ namespace physics_programming.final_assignment {
         public void Step() {
             var g = (MyGame) game;
             OldPosition = Position;
-            Position += Velocity;
+            Position += Velocity * Time.deltaTime;
 
             var lineCollision = FindEarliestLineCollision();
             if (lineCollision != null) {
@@ -67,7 +68,7 @@ namespace physics_programming.final_assignment {
 
             for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
                 var line = myGame.GetLine(i);
-                var currentCollisionInfo = CollisionUtils.CircleLineCollision(Position, OldPosition, Velocity, Radius, line);
+                var currentCollisionInfo = CollisionUtils.CircleLineCollision(Position, OldPosition, Velocity * Time.deltaTime, Radius, line);
                 if (currentCollisionInfo != null && currentCollisionInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(currentCollisionInfo.Normal, null, currentCollisionInfo.TimeOfImpact);
             }
@@ -78,7 +79,7 @@ namespace physics_programming.final_assignment {
         private void ResolveCollision(CollisionInfo collisionInfo) {
             if (collisionInfo.Other == null) {
                 // Line collision
-                Position = OldPosition + Velocity * collisionInfo.TimeOfImpact;
+                Position = OldPosition + Velocity * Time.deltaTime * collisionInfo.TimeOfImpact;
                 Velocity.Reflect(collisionInfo.Normal, Bounciness);
                 rotation = Velocity.GetAngleDegrees();
             }

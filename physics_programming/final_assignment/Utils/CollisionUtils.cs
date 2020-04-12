@@ -57,11 +57,10 @@ namespace physics_programming.final_assignment.Utils {
         }
 
         public static (DoubleDestructibleLineSegment, DoubleDestructibleLineSegment) BulletLineCollision(Bullet bullet, DoubleDestructibleLineSegment line) {
-            var collisionInfo = CircleDestructibleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity, bullet.Radius, line, false);
+            var collisionInfo = CircleDestructibleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, line, false);
             if (collisionInfo != null) {
-                var pointOfImpact = bullet.OldPosition + bullet.Velocity * collisionInfo.TimeOfImpact;
+                var pointOfImpact = bullet.OldPosition + bullet.Velocity * Time.deltaTime * collisionInfo.TimeOfImpact;
 
-                // Project point of impact on line
                 var projectedPoint = Vec2.ProjectPointOnLineSegment(pointOfImpact, line.SideA.Start, line.SideA.End);
 
                 var splitSegments = DoubleDestructibleLineSegment.Split(line, projectedPoint, Globals.World.BulletDLSDamage);

@@ -135,16 +135,16 @@ namespace physics_programming.final_assignment {
                 destructibleLine.Destroy();
             DestructibleLines.Clear();
 
-            player = new Player(500, 400, 3);
+            player = new Player(500, 400, 300);
             AddChild(player);
             
-            enemy = new Enemy(100, 100, 3, player);
+            enemy = new Enemy(100, 100, player);
             AddChild(enemy);
 
-            AddLine(new Vec2(0, height), new Vec2(0, 0));
-            AddLine(new Vec2(width, 0), new Vec2(width, height));
-            AddLine(new Vec2(0, 0), new Vec2(width, 0));
-            AddLine(new Vec2(width, height), new Vec2(0, height));
+            AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
+            AddLine(new Vec2(Globals.WIDTH, 0), new Vec2(Globals.WIDTH, Globals.HEIGHT));
+            AddLine(new Vec2(0, 0), new Vec2(Globals.WIDTH, 0));
+            AddLine(new Vec2(Globals.WIDTH, Globals.HEIGHT), new Vec2(0, Globals.HEIGHT));
 
             AddDestructibleLine(new Vec2(100, 200), new Vec2(50, 500));
             AddDestructibleLine(new Vec2(50, 500), new Vec2(49, 600));
