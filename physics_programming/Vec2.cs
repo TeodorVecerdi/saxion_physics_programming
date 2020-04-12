@@ -1,8 +1,5 @@
 using System;
-using System.Runtime.CompilerServices;
 using GXPEngine;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace physics_programming {
     public struct Vec2 : IEquatable<Vec2> {
@@ -43,10 +40,8 @@ namespace physics_programming {
 
         public void Normalize() {
             var mag = magnitude;
-            if (mag < 0.000001f) {
-                // Console.Error.WriteLine($"Division by magnitude of zero while normalizing Vec2: {this}");
+            if (mag < 0.000001f) // Console.Error.WriteLine($"Division by magnitude of zero while normalizing Vec2: {this}");
                 return;
-            }
 
             x /= mag;
             y /= mag;
@@ -113,30 +108,32 @@ namespace physics_programming {
         }
 
         public static Vec2 RandomUnitVector() {
-            var rad = GXPEngine.Utils.Random(0, Mathf.PI * 2f);
+            var rad = Utils.Random(0, Mathf.PI * 2f);
             return GetUnitVectorRad(rad);
         }
 
         /// <summary>
-        /// Projects a point on a line segment
+        ///     Projects a point on a line segment
         /// </summary>
         /// <param name="q">Point to project</param>
         /// <param name="p0">Start of line segment</param>
         /// <param name="p1">End of line segment</param>
-        /// <returns><paramref name="q"/> projected on the line segment from <paramref name="p0"/> to <paramref name="p1"/></returns>
+        /// <returns>
+        ///     <paramref name="q" /> projected on the line segment from <paramref name="p0" /> to <paramref name="p1" />
+        /// </returns>
         public static Vec2 ProjectPointOnLineSegment(Vec2 q, Vec2 p0, Vec2 p1) {
             var a = p1.x - p0.x;
             var b = p1.y - p0.y;
             var c = p0.y - p1.y;
 
-            var pYN = p0.y*a - p0.x*b - q.x*c - q.y * (c*b/a);
-            var pYD = a - c*b/a;
+            var pYN = p0.y * a - p0.x * b - q.x * c - q.y * (c * b / a);
+            var pYD = a - c * b / a;
             var pY = pYN / pYD;
 
             var pXN = q.x * a + q.y * b - pY * b;
             var pXD = a;
             var pX = pXN / pXD;
-            
+
             return new Vec2(pX, pY);
         }
 
@@ -194,10 +191,18 @@ namespace physics_programming {
         public override string ToString() {
             return $"({x},{y})";
         }
-        
-        public static implicit operator Vec2(Vector2 v) => new Vec2(v.x, v.y);
-        public static implicit operator Vec2(Vector2Int v) => new Vec2(v.x, v.y);
-        public static implicit operator Vec2(Vector3 v) => new Vec2(v.x, v.y);
+
+        public static implicit operator Vec2(Vector2 v) {
+            return new Vec2(v.x, v.y);
+        }
+
+        public static implicit operator Vec2(Vector2Int v) {
+            return new Vec2(v.x, v.y);
+        }
+
+        public static implicit operator Vec2(Vector3 v) {
+            return new Vec2(v.x, v.y);
+        }
 
         public static readonly Vec2 Zero = new Vec2(0f, 0f);
         public static readonly Vec2 One = new Vec2(1f, 1f);

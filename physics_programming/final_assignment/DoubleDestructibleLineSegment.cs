@@ -4,11 +4,11 @@ using GXPEngine.Core;
 
 namespace physics_programming.final_assignment {
     public class DoubleDestructibleLineSegment : GameObject {
-        public bool ShouldRemove;
+        public readonly CircleCollider EndCollider;
+        public readonly CircleCollider StartCollider;
         public readonly DestructibleLineSegment SideA;
         public readonly DestructibleLineSegment SideB;
-        public readonly CircleCollider StartCollider;
-        public readonly CircleCollider EndCollider;
+        public bool ShouldRemove;
 
         public DoubleDestructibleLineSegment(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1) {
             SideA = new DestructibleLineSegment(start, end, 0xffff0000, lineWidth);
@@ -24,25 +24,22 @@ namespace physics_programming.final_assignment {
         //------------------------------------------------------------------------------------------------------------------------
         //														RenderSelf()
         //------------------------------------------------------------------------------------------------------------------------
-        protected override void RenderSelf(GLContext glContext) {
-        }
-        
+        protected override void RenderSelf(GLContext glContext) { }
+
         public static ValueTuple<DoubleDestructibleLineSegment, DoubleDestructibleLineSegment> Split(DoubleDestructibleLineSegment a, Vec2 point, float size) {
             var split1 = DestructibleLineSegment.Split(a.SideA, point, size);
             var split2 = DestructibleLineSegment.Split(a.SideB, point, size);
             DoubleDestructibleLineSegment lineLeft;
             DoubleDestructibleLineSegment lineRight;
-            if (split1.Item1 == null || split2.Item2 == null) {
+            if (split1.Item1 == null || split2.Item2 == null)
                 lineLeft = null;
-            } else {
+            else
                 lineLeft = new DoubleDestructibleLineSegment(split1.Item1.Start, split1.Item1.End, split1.Item1.Color, split1.Item1.LineWidth);
-            }
 
-            if (split1.Item2 == null || split2.Item1 == null) {
+            if (split1.Item2 == null || split2.Item1 == null)
                 lineRight = null;
-            } else {
+            else
                 lineRight = new DoubleDestructibleLineSegment(split1.Item2.Start, split1.Item2.End, split1.Item2.Color, split1.Item2.LineWidth);
-            }
             return ValueTuple.Create(lineLeft, lineRight);
         }
     }

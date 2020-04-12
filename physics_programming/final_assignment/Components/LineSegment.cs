@@ -20,9 +20,8 @@ namespace physics_programming.final_assignment.Components {
         //														RenderSelf()
         //------------------------------------------------------------------------------------------------------------------------
         protected override void RenderSelf(GLContext glContext) {
-            if (game != null) {
+            if (game != null)
                 RenderLine(Start, End, Color, LineWidth);
-            }
         }
 
         public static void RenderLine(Vec2 start, Vec2 end, uint color = 0xffffffff, uint lineWidth = 1, bool useGlobalCoords = false) {
@@ -30,7 +29,7 @@ namespace physics_programming.final_assignment.Components {
         }
 
         public static void RenderLine(float startX, float startY, float endX, float endY, uint color = 0xffffffff, uint lineWidth = 1, bool useGlobalCoords = false) {
-            if(useGlobalCoords) GL.LoadIdentity();
+            if (useGlobalCoords) GL.LoadIdentity();
             GL.Disable(GL.TEXTURE_2D);
             GL.LineWidth(lineWidth);
             GL.Color4ub((byte) ((color >> 16) & 0xff), (byte) ((color >> 8) & 0xff), (byte) (color & 0xff), (byte) ((color >> 24) & 0xff));

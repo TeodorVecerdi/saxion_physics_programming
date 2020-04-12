@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using GXPEngine;
-using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class Tank : Sprite {
         public readonly Barrel Barrel;
+        public readonly List<CircleCollider> Colliders;
 
         public Vec2 Acceleration;
-        public Vec2 Velocity;
-        public Vec2 Position;
         public Vec2 OldPosition;
+        public Vec2 Position;
+        public Vec2 Velocity;
+        private readonly Action<Tank> barrelMove;
 
-        private readonly List<CircleCollider> colliders;
         private readonly Action<Tank> tankMove;
         private readonly Action<Tank> tankShoot;
-        private readonly Action<Tank> barrelMove;
 
         public Tank(float px, float py, Action<Tank> tankMove, Action<Tank> tankShoot, Action<Tank> barrelMove, uint color = 0xffffffff) : base("data/assets/bodies/t34.png") {
             Position.x = px;
@@ -32,11 +31,11 @@ namespace physics_programming.final_assignment {
             Barrel.SetOrigin(34, 28);
             AddChild(Barrel);
 
-            colliders = new List<CircleCollider> {
+            Colliders = new List<CircleCollider> {
                 new CircleCollider(40, new Vec2(-texture.width / 2f + 45, 0)),
                 new CircleCollider(40, new Vec2(texture.width / 2f - 45, 0))
             };
-            colliders.ForEach(collider => {
+            Colliders.ForEach(collider => {
                 collider.IsVisible = true;
                 AddChild(collider);
             });
@@ -44,10 +43,10 @@ namespace physics_programming.final_assignment {
 
         private void Collisions() {
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
-            colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
+            Colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
-            colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
+            Colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
             if (!float.IsPositiveInfinity(collisionInfo.TimeOfImpact))

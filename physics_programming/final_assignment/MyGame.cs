@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using GXPEngine;
 using physics_programming.final_assignment.Components;
 
 namespace physics_programming.final_assignment {
     public class MyGame : Game {
-        public Player Player;
+        public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
         public List<Enemy> Enemies;
+        public Player Player;
 
         private readonly List<Ball> movers;
         private readonly List<Bullet> bullets;
         private readonly List<LineSegment> lines;
-        public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
         private bool paused;
         private bool stepped;
 
@@ -112,19 +111,16 @@ namespace physics_programming.final_assignment {
             if (Input.GetKeyDown(Key.R))
                 Restart();
 
-            if (Input.GetKeyDown(Key.T)) {
-                foreach (var line in DestructibleLines) {
+            if (Input.GetKeyDown(Key.T))
+                foreach (var line in DestructibleLines)
                     Console.WriteLine($"Line Size: {(line.SideA.End - line.SideA.Start).magnitude}");
-                }
-            }
         }
 
         private void Restart() {
             Player?.Destroy();
 
-            foreach (var enemy in Enemies) {
+            foreach (var enemy in Enemies)
                 enemy.Destroy();
-            }
 
             Enemies.Clear();
 
@@ -155,14 +151,14 @@ namespace physics_programming.final_assignment {
             AddLine(new Vec2(0, 0), new Vec2(Globals.WIDTH, 0));
             AddLine(new Vec2(Globals.WIDTH, Globals.HEIGHT), new Vec2(0, Globals.HEIGHT));
 
-            AddDestructibleLine(new Vec2(100, 300+200), new Vec2(50 , 300+500));
-            AddDestructibleLine(new Vec2(50 , 300+500), new Vec2(49 , 300+600));
-            AddDestructibleLine(new Vec2(100, 300+200), new Vec2(500, 300+250));
-            AddDestructibleLine(new Vec2(100, 300+175), new Vec2(500, 300+225));
-            AddDestructibleLine(new Vec2(500, 300+250), new Vec2(550, 300+300));
-            AddDestructibleLine(new Vec2(550, 300+300), new Vec2(600, 300+375));
-            AddDestructibleLine(new Vec2(600, 300+375), new Vec2(625, 300+475));
-            AddDestructibleLine(new Vec2(625, 300+475), new Vec2(626, 300+600));
+            AddDestructibleLine(new Vec2(100, 300 + 200), new Vec2(50, 300 + 500));
+            AddDestructibleLine(new Vec2(50, 300 + 500), new Vec2(49, 300 + 600));
+            AddDestructibleLine(new Vec2(100, 300 + 200), new Vec2(500, 300 + 250));
+            AddDestructibleLine(new Vec2(100, 300 + 175), new Vec2(500, 300 + 225));
+            AddDestructibleLine(new Vec2(500, 300 + 250), new Vec2(550, 300 + 300));
+            AddDestructibleLine(new Vec2(550, 300 + 300), new Vec2(600, 300 + 375));
+            AddDestructibleLine(new Vec2(600, 300 + 375), new Vec2(625, 300 + 475));
+            AddDestructibleLine(new Vec2(625, 300 + 475), new Vec2(626, 300 + 600));
 
             Ball.Acceleration.SetXY(0, 0);
 

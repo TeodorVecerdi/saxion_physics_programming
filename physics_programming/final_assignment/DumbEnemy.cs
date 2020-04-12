@@ -4,8 +4,8 @@ using GXPEngine;
 namespace physics_programming.final_assignment {
     public class DumbEnemy : Enemy {
         public DumbEnemy(float px, float py, float accuracy = 1f) : base(accuracy) {
-            var enemyTank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xffffeabc);
-            AddChild(enemyTank);
+            Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xff669a1c);
+            AddChild(Tank);
         }
 
         protected override void TankMove(Tank tank) {
@@ -18,7 +18,7 @@ namespace physics_programming.final_assignment {
             var g = (MyGame) game;
             var accuracyOffset = Rand.Range(-AccuracyDegreeVariation + Accuracy * AccuracyDegreeVariation, AccuracyDegreeVariation - Accuracy * AccuracyDegreeVariation);
             var bulletRotation = accuracyOffset + tank.Barrel.rotation + tank.rotation;
-            var bullet = new Bullet(tank.Position, Vec2.GetUnitVectorDeg(bulletRotation)) {rotation = bulletRotation};
+            var bullet = new Bullet(tank.Position, Vec2.GetUnitVectorDeg(bulletRotation), Tank) {rotation = bulletRotation};
             g.AddBullet(bullet);
             timeLeftToShoot = timeToShoot;
         }

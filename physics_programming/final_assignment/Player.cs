@@ -1,11 +1,10 @@
 using System;
 using GXPEngine;
-using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class Player : GameObject {
-        private readonly float maxVelocity;
         public readonly Tank Tank;
+        private readonly float maxVelocity;
 
         public Player(float px, float py, float maxVelocity) {
             this.maxVelocity = maxVelocity;
@@ -15,19 +14,19 @@ namespace physics_programming.final_assignment {
 
         private void BarrelMove(Tank tank) {
             Vec2 mousePos = Input.mousePosition;
-            var desiredRotation = -tank.rotation + Vec2.Rad2Deg((float)Math.Atan2(mousePos.y - tank.Position.y, mousePos.x - tank.Position.x));
+            var desiredRotation = -tank.rotation + Vec2.Rad2Deg((float) Math.Atan2(mousePos.y - tank.Position.y, mousePos.x - tank.Position.x));
             var delta = desiredRotation - tank.Barrel.rotation;
             var shortestAngle = Mathf.Clamp(delta - Mathf.Floor(delta / 360f) * 360f, 0.0f, 360f);
             if (shortestAngle > 180)
                 shortestAngle -= 360;
-            if(Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)
+            if (Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)
                 tank.Barrel.rotation += shortestAngle * 0.15f;
         }
 
         private void TankShoot(Tank tank) {
             if (Input.GetMouseButtonDown(0)) {
                 var g = (MyGame) game;
-                var bullet = new Bullet(tank.Position, Vec2.GetUnitVectorDeg(tank.Barrel.rotation + tank.rotation)) {rotation = tank.Barrel.rotation + tank.rotation};
+                var bullet = new Bullet(tank.Position, Vec2.GetUnitVectorDeg(tank.Barrel.rotation + tank.rotation), Tank) {rotation = tank.Barrel.rotation + tank.rotation};
                 g.AddBullet(bullet);
             }
         }
@@ -37,6 +36,7 @@ namespace physics_programming.final_assignment {
             if (tank.Acceleration != Vec2.Zero) {
                 // TODO: MOVE BACK TO USING ACCELERATION
                 tank.Velocity = tank.Acceleration.normalized * maxVelocity;
+
                 // tank.Velocity += tank.Acceleration;
                 if (tank.Velocity.sqrMagnitude >= maxVelocity * maxVelocity)
                     tank.Velocity = tank.Velocity.normalized * maxVelocity;
@@ -44,6 +44,7 @@ namespace physics_programming.final_assignment {
                 tank.Velocity.x = 0f /*Mathf.Lerp(tank.Velocity.x, 0f, 0.05f)*/;
                 tank.Velocity.y = 0f /*Mathf.Lerp(tank.Velocity.y, 0f, 0.05f)*/;
             }
+
             tank.OldPosition = tank.Position;
             tank.Position += tank.Velocity * Time.deltaTime;
         }

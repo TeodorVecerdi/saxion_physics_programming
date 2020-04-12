@@ -7,7 +7,6 @@ namespace physics_programming.final_assignment {
     public class DestructibleLineSegment : GameObject {
         public readonly uint Color;
         public readonly uint LineWidth;
-        public bool ShouldRemove;
         public Vec2 End;
         public Vec2 Start;
 
@@ -22,9 +21,8 @@ namespace physics_programming.final_assignment {
         //														RenderSelf()
         //------------------------------------------------------------------------------------------------------------------------
         protected override void RenderSelf(GLContext glContext) {
-            if (game != null) {
+            if (game != null)
                 RenderLine(Start, End, Color, LineWidth);
-            }
         }
 
         public static void RenderLine(Vec2 pStart, Vec2 pEnd, uint pColor = 0xffffffff, uint pLineWidth = 1, bool pUseGlobalCoords = false) {
@@ -32,7 +30,7 @@ namespace physics_programming.final_assignment {
         }
 
         public static void RenderLine(float pStartX, float pStartY, float pEndX, float pEndY, uint pColor = 0xffffffff, uint pLineWidth = 1, bool pUseGlobalCoords = false) {
-            if(pUseGlobalCoords) GL.LoadIdentity();
+            if (pUseGlobalCoords) GL.LoadIdentity();
             GL.Disable(GL.TEXTURE_2D);
             GL.LineWidth(pLineWidth);
             GL.Color4ub((byte) ((pColor >> 16) & 0xff), (byte) ((pColor >> 8) & 0xff), (byte) (pColor & 0xff), (byte) ((pColor >> 24) & 0xff));
@@ -43,7 +41,7 @@ namespace physics_programming.final_assignment {
             GL.DisableClientState(GL.VERTEX_ARRAY);
             GL.Enable(GL.TEXTURE_2D);
         }
-        
+
         public static ValueTuple<DestructibleLineSegment, DestructibleLineSegment> Split(DestructibleLineSegment a, Vec2 point, float size) {
             var line1Start = a.Start;
             var line1Vector = point - line1Start;

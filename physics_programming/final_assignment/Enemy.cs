@@ -3,6 +3,7 @@ using GXPEngine;
 
 namespace physics_programming.final_assignment {
     public abstract class Enemy : GameObject {
+        public Tank Tank;
         protected const float AccuracyDegreeVariation = 30f;
 
         protected const float timeToShoot = 2f;
