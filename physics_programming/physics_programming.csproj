@@ -88,7 +88,9 @@
         <Compile Include="final_assignment\Components\LineSegment.cs" />
         <Compile Include="final_assignment\DestructibleLineSegment.cs" />
         <Compile Include="final_assignment\DoubleDestructibleLineSegment.cs" />
+        <Compile Include="final_assignment\DumbEnemy.cs" />
         <Compile Include="final_assignment\Enemy.cs" />
+        <Compile Include="final_assignment\SmartEnemy.cs" />
         <Compile Include="final_assignment\MyGame.cs" />
         <Compile Include="final_assignment\Player.cs" />
         <Compile Include="final_assignment\Tank.cs" />

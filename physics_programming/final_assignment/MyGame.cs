@@ -8,6 +8,9 @@ using physics_programming.final_assignment.Components;
 
 namespace physics_programming.final_assignment {
     public class MyGame : Game {
+        public Player Player;
+        public List<Enemy> Enemies;
+
         private readonly List<Ball> movers;
         private readonly List<Bullet> bullets;
         private readonly List<LineSegment> lines;
@@ -16,8 +19,6 @@ namespace physics_programming.final_assignment {
         private bool stepped;
 
         private int stepIndex;
-        private Player player;
-        private Enemy enemy;
 
         public MyGame() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
@@ -26,6 +27,7 @@ namespace physics_programming.final_assignment {
             lines = new List<LineSegment>();
             bullets = new List<Bullet>();
             DestructibleLines = new List<DoubleDestructibleLineSegment>();
+            Enemies = new List<Enemy>();
 
             Restart();
             PrintInfo();
@@ -118,11 +120,18 @@ namespace physics_programming.final_assignment {
         }
 
         private void Restart() {
-            player?.Destroy();
-            enemy?.Destroy();
+            Player?.Destroy();
+
+            foreach (var enemy in Enemies) {
+                enemy.Destroy();
+            }
+
+            Enemies.Clear();
+
             foreach (var line in lines)
                 line.Destroy();
             lines.Clear();
+
             foreach (var mover in movers)
                 mover.Destroy();
             movers.Clear();
@@ -135,31 +144,33 @@ namespace physics_programming.final_assignment {
                 destructibleLine.Destroy();
             DestructibleLines.Clear();
 
-            player = new Player(500, 400, 300);
-            AddChild(player);
-            
-            enemy = new Enemy(100, 100, player);
-            AddChild(enemy);
+            Player = new Player(500, 400, 300);
+            AddChild(Player);
+
+            Enemies.Add(new SmartEnemy(100, 100));
+            Enemies.Add(new DumbEnemy(600, 150));
 
             AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
             AddLine(new Vec2(Globals.WIDTH, 0), new Vec2(Globals.WIDTH, Globals.HEIGHT));
             AddLine(new Vec2(0, 0), new Vec2(Globals.WIDTH, 0));
             AddLine(new Vec2(Globals.WIDTH, Globals.HEIGHT), new Vec2(0, Globals.HEIGHT));
 
-            AddDestructibleLine(new Vec2(100, 200), new Vec2(50, 500));
-            AddDestructibleLine(new Vec2(50, 500), new Vec2(49, 600));
-            AddDestructibleLine(new Vec2(100, 200), new Vec2(500, 250));
-            AddDestructibleLine(new Vec2(100, 175), new Vec2(500, 225));
-            AddDestructibleLine(new Vec2(500, 250), new Vec2(550, 300));
-            AddDestructibleLine(new Vec2(550, 300), new Vec2(600, 375));
-            AddDestructibleLine(new Vec2(600, 375), new Vec2(625, 475));
-            AddDestructibleLine(new Vec2(625, 475), new Vec2(626, 600));
+            AddDestructibleLine(new Vec2(100, 300+200), new Vec2(50 , 300+500));
+            AddDestructibleLine(new Vec2(50 , 300+500), new Vec2(49 , 300+600));
+            AddDestructibleLine(new Vec2(100, 300+200), new Vec2(500, 300+250));
+            AddDestructibleLine(new Vec2(100, 300+175), new Vec2(500, 300+225));
+            AddDestructibleLine(new Vec2(500, 300+250), new Vec2(550, 300+300));
+            AddDestructibleLine(new Vec2(550, 300+300), new Vec2(600, 300+375));
+            AddDestructibleLine(new Vec2(600, 300+375), new Vec2(625, 300+475));
+            AddDestructibleLine(new Vec2(625, 300+475), new Vec2(626, 300+600));
 
             Ball.Acceleration.SetXY(0, 0);
 
             // movers.Add(new Ball(30, new Vec2(200, 300), new Vec2(0, 0)));
             foreach (var b in movers)
                 AddChild(b);
+            foreach (var enemy in Enemies)
+                AddChild(enemy);
         }
 
         private void StepThroughMovers() {

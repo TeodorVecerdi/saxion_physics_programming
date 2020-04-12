@@ -19,15 +19,16 @@ namespace physics_programming.final_assignment {
         private readonly Action<Tank> tankShoot;
         private readonly Action<Tank> barrelMove;
 
-        public Tank(float px, float py, Action<Tank> tankMove, Action<Tank> tankShoot, Action<Tank> barrelMove) : base("data/assets/bodies/t34.png") {
+        public Tank(float px, float py, Action<Tank> tankMove, Action<Tank> tankShoot, Action<Tank> barrelMove, uint color = 0xffffffff) : base("data/assets/bodies/t34.png") {
             Position.x = px;
             Position.y = py;
             this.tankMove = tankMove;
             this.tankShoot = tankShoot;
             this.barrelMove = barrelMove;
+            this.color = color;
 
             SetOrigin(texture.width / 2f, texture.height / 2f);
-            Barrel = new Barrel();
+            Barrel = new Barrel(color);
             Barrel.SetOrigin(34, 28);
             AddChild(Barrel);
 

@@ -52,6 +52,9 @@ namespace physics_programming.final_assignment {
                 destructibleLine.ShouldRemove = true;
                 if (line1 != null) linesToAdd.Add(line1);
                 if (line2 != null) linesToAdd.Add(line2);
+                
+                if (bouncesLeft <= 0) Dead = true;
+                else bouncesLeft--;
             }
 
             linesToAdd.ForEach(line => {
