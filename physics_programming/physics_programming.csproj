@@ -88,8 +88,10 @@
         <Compile Include="final_assignment\Components\LineSegment.cs" />
         <Compile Include="final_assignment\DestructibleLineSegment.cs" />
         <Compile Include="final_assignment\DoubleDestructibleLineSegment.cs" />
+        <Compile Include="final_assignment\Enemy.cs" />
         <Compile Include="final_assignment\MyGame.cs" />
         <Compile Include="final_assignment\Player.cs" />
+        <Compile Include="final_assignment\Tank.cs" />
         <Compile Include="final_assignment\Utils\CollisionUtils.cs" />
         <Compile Include="final_assignment\Utils\MathUtils.cs" />
         <Compile Include="Globals.cs" />

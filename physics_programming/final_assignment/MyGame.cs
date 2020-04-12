@@ -17,6 +17,7 @@ namespace physics_programming.final_assignment {
 
         private int stepIndex;
         private Player player;
+        private Enemy enemy;
 
         public MyGame() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
@@ -118,6 +119,7 @@ namespace physics_programming.final_assignment {
 
         private void Restart() {
             player?.Destroy();
+            enemy?.Destroy();
             foreach (var line in lines)
                 line.Destroy();
             lines.Clear();
@@ -135,6 +137,9 @@ namespace physics_programming.final_assignment {
 
             player = new Player(500, 400, 3);
             AddChild(player);
+            
+            enemy = new Enemy(100, 100, 3, player);
+            AddChild(enemy);
 
             AddLine(new Vec2(0, height), new Vec2(0, 0));
             AddLine(new Vec2(width, 0), new Vec2(width, height));

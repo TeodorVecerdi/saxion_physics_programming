@@ -194,6 +194,10 @@ namespace physics_programming {
         public override string ToString() {
             return $"({x},{y})";
         }
+        
+        public static implicit operator Vec2(Vector2 v) => new Vec2(v.x, v.y);
+        public static implicit operator Vec2(Vector2Int v) => new Vec2(v.x, v.y);
+        public static implicit operator Vec2(Vector3 v) => new Vec2(v.x, v.y);
 
         public static readonly Vec2 Zero = new Vec2(0f, 0f);
         public static readonly Vec2 One = new Vec2(1f, 1f);
