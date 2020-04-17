@@ -1,11 +1,17 @@
 using System;
+using System.Drawing;
 using GXPEngine;
 
 namespace physics_programming.final_assignment {
     public class DumbEnemy : TankAIBase {
+        private AttackIndicator attackIndicator;
         public DumbEnemy(float px, float py, float accuracy = 1f) : base(accuracy) {
             Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xff669a1c);
             AddChild(Tank);
+            
+            attackIndicator = new AttackIndicator(TimeToShoot, radius: 50, color: Color.FromArgb(127, 55, 255, 55 ));
+            attackIndicator.SetXY(25, -50);
+            Tank.Barrel.AddChild(attackIndicator);
         }
 
         protected override void TankMove(Tank tank) {
@@ -34,6 +40,8 @@ namespace physics_programming.final_assignment {
                 shortestAngle -= 360;
             if (Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)
                 tank.Barrel.rotation += shortestAngle * 0.10f;
+            
+            attackIndicator.UpdateIndicator(TimeLeftToShoot);
         }
     }
 }

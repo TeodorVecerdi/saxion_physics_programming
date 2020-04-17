@@ -8,8 +8,8 @@ namespace physics_programming.final_assignment {
         public SmartEnemyAI(float px, float py, float accuracy = 1f) : base(accuracy) {
             Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xffffeabc);
             AddChild(Tank);
-            attackIndicator = new AttackIndicator(TimeToShoot, radius: 100, color: Color.FromArgb(40, 255, 255, 255 ), initialArcAngle: 180);
-            attackIndicator.SetXY(Tank.Barrel.width/3f, 0);
+            attackIndicator = new AttackIndicator(TimeToShoot, radius: 50, color: Color.FromArgb(127, 55, 55, 255 ));
+            attackIndicator.SetXY(25, -50);
             Tank.Barrel.AddChild(attackIndicator);
         }
 
@@ -55,7 +55,7 @@ namespace physics_programming.final_assignment {
             if (Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)
                 tank.Barrel.rotation += shortestAngle * 0.10f;
             
-            attackIndicator.UpdateIndicator(TimeLeftToShoot, 0);
+            attackIndicator.UpdateIndicator(TimeLeftToShoot);
         }
     }
 }

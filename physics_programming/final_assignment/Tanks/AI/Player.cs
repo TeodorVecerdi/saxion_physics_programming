@@ -3,11 +3,11 @@ using GXPEngine;
 
 namespace physics_programming.final_assignment {
     public class Player : TankAIBase {
+        private readonly float maxVelocity;
         public Tank Tank {
             get => base.Tank;
             set => base.Tank = value;
         }
-        private readonly float maxVelocity;
 
         public Player(float px, float py, float maxVelocity) : base(1f, 0f) {
             this.maxVelocity = maxVelocity;
@@ -37,15 +37,12 @@ namespace physics_programming.final_assignment {
         protected override void TankMove(Tank tank) {
             Controls(tank);
             if (tank.Acceleration != Vec2.Zero) {
-                // TODO: MOVE BACK TO USING ACCELERATION
-                tank.Velocity = tank.Acceleration.normalized * maxVelocity;
-
-                // tank.Velocity += tank.Acceleration;
+                tank.Velocity += tank.Acceleration;
                 if (tank.Velocity.sqrMagnitude >= maxVelocity * maxVelocity)
                     tank.Velocity = tank.Velocity.normalized * maxVelocity;
             } else {
-                tank.Velocity.x = 0f /*Mathf.Lerp(tank.Velocity.x, 0f, 0.05f)*/;
-                tank.Velocity.y = 0f /*Mathf.Lerp(tank.Velocity.y, 0f, 0.05f)*/;
+                tank.Velocity.x = Mathf.Lerp(tank.Velocity.x, 0f, 0.05f);
+                tank.Velocity.y = Mathf.Lerp(tank.Velocity.y, 0f, 0.05f);
             }
 
             tank.OldPosition = tank.Position;
