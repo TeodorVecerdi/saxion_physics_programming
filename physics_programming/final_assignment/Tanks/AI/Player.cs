@@ -2,17 +2,20 @@ using System;
 using GXPEngine;
 
 namespace physics_programming.final_assignment {
-    public class Player : GameObject {
-        public readonly Tank Tank;
+    public class Player : TankAIBase {
+        public Tank Tank {
+            get => base.Tank;
+            set => base.Tank = value;
+        }
         private readonly float maxVelocity;
 
-        public Player(float px, float py, float maxVelocity) {
+        public Player(float px, float py, float maxVelocity) : base(1f, 0f) {
             this.maxVelocity = maxVelocity;
             Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove);
             AddChild(Tank);
         }
 
-        private void BarrelMove(Tank tank) {
+        protected override void BarrelMove(Tank tank) {
             Vec2 mousePos = Input.mousePosition;
             var desiredRotation = -tank.rotation + Vec2.Rad2Deg((float) Math.Atan2(mousePos.y - tank.Position.y, mousePos.x - tank.Position.x));
             var delta = desiredRotation - tank.Barrel.rotation;
@@ -23,7 +26,7 @@ namespace physics_programming.final_assignment {
                 tank.Barrel.rotation += shortestAngle * 0.15f;
         }
 
-        private void TankShoot(Tank tank) {
+        protected override void TankShoot(Tank tank) {
             if (Input.GetMouseButtonDown(0)) {
                 var g = (MyGame) game;
                 var bullet = new Bullet(tank.Position, Vec2.GetUnitVectorDeg(tank.Barrel.rotation + tank.rotation), Tank) {rotation = tank.Barrel.rotation + tank.rotation};
@@ -31,7 +34,7 @@ namespace physics_programming.final_assignment {
             }
         }
 
-        private void TankMove(Tank tank) {
+        protected override void TankMove(Tank tank) {
             Controls(tank);
             if (tank.Acceleration != Vec2.Zero) {
                 // TODO: MOVE BACK TO USING ACCELERATION

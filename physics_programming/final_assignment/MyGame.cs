@@ -8,7 +8,7 @@ using physics_programming.final_assignment.Components;
 namespace physics_programming.final_assignment {
     public class MyGame : Game {
         public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
-        public List<Enemy> Enemies;
+        public List<TankAIBase> Enemies;
         public Player Player;
 
         private readonly List<Ball> movers;
@@ -26,7 +26,7 @@ namespace physics_programming.final_assignment {
             lines = new List<LineSegment>();
             bullets = new List<Bullet>();
             DestructibleLines = new List<DoubleDestructibleLineSegment>();
-            Enemies = new List<Enemy>();
+            Enemies = new List<TankAIBase>();
 
             Restart();
             PrintInfo();
@@ -143,7 +143,7 @@ namespace physics_programming.final_assignment {
             Player = new Player(500, 400, 300);
             AddChild(Player);
 
-            Enemies.Add(new SmartEnemy(100, 100));
+            Enemies.Add(new SmartEnemyAI(100, 100));
             Enemies.Add(new DumbEnemy(600, 150));
 
             AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
