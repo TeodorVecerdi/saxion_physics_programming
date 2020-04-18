@@ -1,5 +1,6 @@
 using System;
 using GXPEngine;
+using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class Player : TankAIBase {
@@ -41,8 +42,11 @@ namespace physics_programming.final_assignment {
                 if (tank.Velocity.sqrMagnitude >= maxVelocity * maxVelocity)
                     tank.Velocity = tank.Velocity.normalized * maxVelocity;
             } else {
-                tank.Velocity.x = Mathf.Lerp(tank.Velocity.x, 0f, 0.05f);
-                tank.Velocity.y = Mathf.Lerp(tank.Velocity.y, 0f, 0.05f);
+                // Apply friction
+                var newVel = ExponentialDecay(tank, 5f);
+                tank.Velocity = newVel;
+                // tank.Velocity.x = Mathf.Lerp(tank.Velocity.x, 0f, 0.05f);
+                // tank.Velocity.y = Mathf.Lerp(tank.Velocity.y, 0f, 0.05f);
             }
 
             tank.OldPosition = tank.Position;
@@ -57,7 +61,7 @@ namespace physics_programming.final_assignment {
             if (Input.GetKey(Key.A))
                 rotationAmount = -1f;
 
-            // rotationAmount *= MathUtils.Map(tank.Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
+            rotationAmount *= MathUtils.Map(tank.Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
             tank.rotation += rotationAmount;
             tank.Acceleration = Vec2.Right * 20f;
             tank.Acceleration.SetAngleDegrees(tank.rotation);
@@ -66,6 +70,13 @@ namespace physics_programming.final_assignment {
             if (Input.GetKey(Key.W)) dir += 1;
             if (Input.GetKey(Key.S)) dir -= 1;
             tank.Acceleration *= dir;
+        }
+
+        private Vec2 ExponentialDecay(Tank tank, float dampAmount) {
+            // N(t) = e^C * e^-dt = N_0 e^dt
+            // or
+            // v' = v * e^-dt
+            return tank.Velocity * Mathf.Exp(-dampAmount * Time.deltaTime);
         }
     }
 }
