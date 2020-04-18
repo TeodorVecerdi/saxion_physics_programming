@@ -42,11 +42,8 @@ namespace physics_programming.final_assignment {
                 if (tank.Velocity.sqrMagnitude >= maxVelocity * maxVelocity)
                     tank.Velocity = tank.Velocity.normalized * maxVelocity;
             } else {
-                // Apply friction
                 var newVel = ExponentialDecay(tank, 5f);
                 tank.Velocity = newVel;
-                // tank.Velocity.x = Mathf.Lerp(tank.Velocity.x, 0f, 0.05f);
-                // tank.Velocity.y = Mathf.Lerp(tank.Velocity.y, 0f, 0.05f);
             }
 
             tank.OldPosition = tank.Position;
@@ -73,8 +70,6 @@ namespace physics_programming.final_assignment {
         }
 
         private Vec2 ExponentialDecay(Tank tank, float dampAmount) {
-            // N(t) = e^C * e^-dt = N_0 e^dt
-            // or
             // v' = v * e^-dt
             return tank.Velocity * Mathf.Exp(-dampAmount * Time.deltaTime);
         }
