@@ -56,10 +56,10 @@ namespace physics_programming.final_assignment {
         private void Controls(Tank tank) {
             var rotationAmount = 0f;
             if (Input.GetKey(Key.D))
-                rotationAmount = 1f;
+                rotationAmount += 1f;
 
             if (Input.GetKey(Key.A))
-                rotationAmount = -1f;
+                rotationAmount += -1f;
 
             rotationAmount *= MathUtils.Map(tank.Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
             tank.rotation += rotationAmount;
