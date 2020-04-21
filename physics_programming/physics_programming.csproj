@@ -80,12 +80,12 @@
         <Compile Include="assignment5\Components\LineSegment.cs" />
         <Compile Include="assignment5\MyGame.cs" />
         <Compile Include="final_assignment\Ball.cs" />
-        <Compile Include="final_assignment\CircleCollider.cs" />
         <Compile Include="final_assignment\CollisionInfo.cs" />
         <Compile Include="final_assignment\Components\Arrow.cs" />
+        <Compile Include="final_assignment\Components\CircleCollider.cs" />
         <Compile Include="final_assignment\Components\LineSegment.cs" />
-        <Compile Include="final_assignment\DestructibleLineSegment.cs" />
-        <Compile Include="final_assignment\DoubleDestructibleLineSegment.cs" />
+        <Compile Include="final_assignment\Environment\DestructibleLineSegment.cs" />
+        <Compile Include="final_assignment\Environment\DoubleDestructibleLineSegment.cs" />
         <Compile Include="final_assignment\MyGame.cs" />
         <Compile Include="final_assignment\Tanks\AI\DumbEnemy.cs" />
         <Compile Include="final_assignment\Tanks\AI\TankAIBase.cs" />

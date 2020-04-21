@@ -5,7 +5,7 @@ using physics_programming.final_assignment.Utils;
 namespace physics_programming.final_assignment {
     public class Player : TankAIBase {
         private readonly float maxVelocity;
-        public Tank Tank {
+        public new Tank Tank {
             get => base.Tank;
             set => base.Tank = value;
         }
