@@ -8,6 +8,7 @@ using physics_programming.final_assignment.Components;
 namespace physics_programming.final_assignment {
     public class MyGame : Game {
         public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
+        public readonly List<DestructibleBlock> DestructibleBlocks;
         public List<TankAIBase> Enemies;
         public Player Player;
 
@@ -26,6 +27,7 @@ namespace physics_programming.final_assignment {
             lines = new List<LineSegment>();
             bullets = new List<Bullet>();
             DestructibleLines = new List<DoubleDestructibleLineSegment>();
+            DestructibleBlocks = new List<DestructibleBlock>();
             Enemies = new List<TankAIBase>();
 
             Restart();
@@ -140,11 +142,15 @@ namespace physics_programming.final_assignment {
                 destructibleLine.Destroy();
             DestructibleLines.Clear();
 
+            foreach (var destructibleBlock in DestructibleBlocks)
+                destructibleBlock.Destroy();
+            DestructibleBlocks.Clear();
+
             Player = new Player(500, 400, 300);
             AddChild(Player);
 
-            Enemies.Add(new SmartEnemyAI(100, 100));
-            Enemies.Add(new DumbEnemy(600, 150));
+            // Enemies.Add(new SmartEnemyAI(100, 100));
+            // Enemies.Add(new DumbEnemy(600, 150));
 
             AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
             AddLine(new Vec2(Globals.WIDTH, 0), new Vec2(Globals.WIDTH, Globals.HEIGHT));
@@ -159,6 +165,14 @@ namespace physics_programming.final_assignment {
             AddDestructibleLine(new Vec2(550, 300 + 300), new Vec2(600, 300 + 375));
             AddDestructibleLine(new Vec2(600, 300 + 375), new Vec2(625, 300 + 475));
             AddDestructibleLine(new Vec2(625, 300 + 475), new Vec2(626, 300 + 600));
+
+            var block = new DestructibleBlock(30, new Vec2(200, 200), new Vec2(600, 200));
+            DestructibleBlocks.Add(block);
+            AddChild(block);
+            
+            var block2 = new DestructibleBlock(30, new Vec2(750, 200), new Vec2(1050, 200));
+            DestructibleBlocks.Add(block2);
+            AddChild(block2);
 
             Ball.Acceleration.SetXY(0, 0);
 
@@ -179,7 +193,7 @@ namespace physics_programming.final_assignment {
             } else movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
 
             UpdateBullets();
-            UpdateDestructibleLines();
+            UpdateDestructibleEnvironment();
         }
 
         private void UpdateBullets() {
@@ -190,13 +204,22 @@ namespace physics_programming.final_assignment {
             });
         }
 
-        private void UpdateDestructibleLines() {
+        private void UpdateDestructibleEnvironment() {
             var minSizeSqr = Globals.World.DestructibleLineMinLength * 1.5f;
             minSizeSqr *= minSizeSqr;
+
+            //// LINES
             DestructibleLines.Where(l => l.ShouldRemove || (l.SideA.End - l.SideA.Start).sqrMagnitude <= minSizeSqr)
                 .ToList().ForEach(l => {
                     l.Destroy();
                     DestructibleLines.Remove(l);
+                });
+
+            //// BLOCKS
+            DestructibleBlocks.Where(block => block.ShouldRemove || (block.Length1.End - block.Length1.Start).sqrMagnitude <= minSizeSqr || (block.Length2.End - block.Length2.Start).sqrMagnitude <= minSizeSqr)
+                .ToList().ForEach(block => {
+                    block.Destroy();
+                    DestructibleBlocks.Remove(block);
                 });
         }
 
@@ -207,7 +230,7 @@ namespace physics_programming.final_assignment {
                 StepThroughMovers();
         }
 
-        private static void MainFA() {
+        private static void Main() {
             new MyGame().Start();
         }
     }

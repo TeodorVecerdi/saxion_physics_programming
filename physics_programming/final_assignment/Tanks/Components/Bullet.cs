@@ -13,7 +13,7 @@ namespace physics_programming.final_assignment {
         public Vec2 OldPosition;
         public Vec2 Position;
         public Vec2 Velocity;
-        
+
         private readonly Tank parentTank;
         private int bouncesLeft;
 
@@ -48,6 +48,7 @@ namespace physics_programming.final_assignment {
             }
 
             // Destructible collisions
+            //// LINES
             var linesToAdd = new List<DoubleDestructibleLineSegment>();
             foreach (var destructibleLine in g.DestructibleLines) {
                 var (line1, line2) = CollisionUtils.BulletLineCollision(this, destructibleLine);
@@ -65,7 +66,32 @@ namespace physics_programming.final_assignment {
                 g.AddChild(line);
             });
 
-            // Dead = g.Enemies.SelectMany(enemy => enemy.Tank.Colliders).Any(circleCollider => CollisionUtils.CircleCircleCollision(Position, OldPosition, Velocity, Radius, circleCollider.Position, circleCollider.Radius) != null);
+            //// BLOCKS
+            var blocksToAdd = new List<DestructibleBlock>();
+            foreach (var destructibleBlock in g.DestructibleBlocks) {
+                var (block1, block2, collisionInfo) = CollisionUtils.BulletBlockCollision(this, destructibleBlock);
+                if (block1 == null && block2 == null && collisionInfo == null) continue;
+                if(block1 != null || block2 != null ) destructibleBlock.ShouldRemove = true;
+                if (block1 != null) blocksToAdd.Add(block1);
+                if (block2 != null) blocksToAdd.Add(block2);
+
+                if (collisionInfo != null) {
+                    Position = OldPosition + Velocity * Time.deltaTime * collisionInfo.TimeOfImpact;
+                    Velocity.Reflect(collisionInfo.Normal, Bounciness);
+                    rotation = Velocity.GetAngleDegrees();
+                }
+
+                if (bouncesLeft <= 0) Dead = true;
+                else {
+                    bouncesLeft--;
+                }
+            }
+
+            blocksToAdd.ForEach(block => {
+                g.DestructibleBlocks.Add(block);
+                g.AddChild(block);
+            });
+
             var availableTanks = new List<Tank>();
             availableTanks.AddRange(g.Enemies.Select(enemy => enemy.Tank));
             availableTanks.Add(g.Player.Tank);

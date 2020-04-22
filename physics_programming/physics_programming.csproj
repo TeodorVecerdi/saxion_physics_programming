@@ -84,6 +84,7 @@
         <Compile Include="final_assignment\Components\Arrow.cs" />
         <Compile Include="final_assignment\Components\CircleCollider.cs" />
         <Compile Include="final_assignment\Components\LineSegment.cs" />
+        <Compile Include="final_assignment\Environment\DestructibleBlock.cs" />
         <Compile Include="final_assignment\Environment\DestructibleLineSegment.cs" />
         <Compile Include="final_assignment\Environment\DoubleDestructibleLineSegment.cs" />
         <Compile Include="final_assignment\MyGame.cs" />
@@ -99,10 +100,7 @@
         <Compile Include="final_assignment\Utils\MathUtils.cs" />
         <Compile Include="Globals.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="testing\AttackIndicator.cs" />
-        <Compile Include="testing\Block.cs" />
-        <Compile Include="testing\DestructibleLineSegment.cs" />
-        <Compile Include="testing\LineSegment.cs" />
+        <Compile Include="testing\DestructibleBlock.cs" />
         <Compile Include="testing\MainAppTesting.cs" />
         <Compile Include="Tests\Vec2.cs" />
         <Compile Include="Vec2.cs" />
