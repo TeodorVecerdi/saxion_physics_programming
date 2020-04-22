@@ -1,8 +1,9 @@
+
 using GXPEngine;
 using GXPEngine.Core;
 using GXPEngine.OpenGL;
 
-namespace physics_programming.final_assignment.Components {
+namespace physics_programming.testing {
     public class LineSegment : GameObject {
         public readonly uint Color;
         public readonly uint LineWidth;

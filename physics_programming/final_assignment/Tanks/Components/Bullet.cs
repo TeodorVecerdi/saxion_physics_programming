@@ -11,11 +11,11 @@ namespace physics_programming.final_assignment {
         public readonly float Radius;
         public bool Dead;
         public Vec2 OldPosition;
-
         public Vec2 Position;
         public Vec2 Velocity;
-        private int bouncesLeft;
+        
         private readonly Tank parentTank;
+        private int bouncesLeft;
 
         public Bullet(Vec2 position, Vec2 velocity, Tank parentTank, int maxBounces = 0, int radius = 2) : base("data/assets/bullet.png") {
             Position = position;

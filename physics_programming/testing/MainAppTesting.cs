@@ -1,29 +1,16 @@
-using System;
-using System.Drawing;
+using System.Collections.Generic;
 using GXPEngine;
 
 namespace physics_programming.testing {
     public class MainAppTesting : Game {
-        private AttackIndicator indicator;
-        private const float timeToShoot = 3f;
-        private float timeLeftToShoot;
-        
-        public MainAppTesting() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
+        private MainAppTesting() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
-            timeLeftToShoot = timeToShoot;
-            indicator = new AttackIndicator(timeToShoot, color: Color.Aqua, radius: 100, initialArcAngle: 180);
-            indicator.SetXY(200,200);
-            AddChild(indicator);
+
+            // AddChild(new Block(20, new Vec2(500, 500), new Vec2(1000, 700)));
+            AddChild(new Block(new List<Vec2> {(500f, 500f), (507.4278f, 481.4305f), (1007.428f, 681.4305f), (1000f, 700f)}));
         }
 
-        private void Update() {
-            timeLeftToShoot -= Time.deltaTime;
-            if (timeLeftToShoot < 0) 
-                timeLeftToShoot = timeToShoot;
-            indicator.UpdateIndicator(timeLeftToShoot, 0);
-        }
-
-        public static void MainT() {
+        public static void Main() {
             new MainAppTesting().Start();
         }
     }

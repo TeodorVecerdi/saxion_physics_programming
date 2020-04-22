@@ -4,11 +4,12 @@ using GXPEngine;
 
 namespace physics_programming.final_assignment {
     public class SmartEnemyAI : TankAIBase {
-        private AttackIndicator attackIndicator;
+        private readonly AttackIndicator attackIndicator;
+
         public SmartEnemyAI(float px, float py, float accuracy = 1f) : base(accuracy) {
             Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xffffeabc);
             AddChild(Tank);
-            attackIndicator = new AttackIndicator(TimeToShoot, radius: 50, color: Color.FromArgb(127, 55, 55, 255 ));
+            attackIndicator = new AttackIndicator(TimeToShoot, radius: 50, color: Color.FromArgb(127, 55, 55, 255));
             attackIndicator.SetXY(25, -50);
             Tank.Barrel.AddChild(attackIndicator);
         }
@@ -54,7 +55,7 @@ namespace physics_programming.final_assignment {
                 shortestAngle -= 360;
             if (Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)
                 tank.Barrel.rotation += shortestAngle * 0.10f;
-            
+
             attackIndicator.UpdateIndicator(TimeLeftToShoot);
         }
     }

@@ -1,22 +1,18 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using GXPEngine;
-using GXPEngine.Core;
-using GXPEngine.OpenGL;
 
 namespace physics_programming.final_assignment {
     public class AttackIndicator : EasyDraw {
+        private readonly Color color;
         private readonly float initialArcAngle;
         private readonly float initialTimeLeft;
         private readonly float radius;
-        private readonly Color color;
 
         private float arcAngle;
         private float startAngle;
         private float timeLeft;
 
-        public AttackIndicator(float initialTimeLeft, Color? color = null, float initialArcAngle = 90f, float radius = 2f) : base((int) (2*radius), (int)(2*radius)) {
+        public AttackIndicator(float initialTimeLeft, Color? color = null, float initialArcAngle = 90f, float radius = 2f) : base((int) (2 * radius), (int) (2 * radius)) {
             this.initialTimeLeft = initialTimeLeft;
             this.color = color ?? Color.White;
             this.initialArcAngle = initialArcAngle;
@@ -29,11 +25,13 @@ namespace physics_programming.final_assignment {
             Clear(Color.Transparent);
             Fill(color, color.A);
             NoStroke();
-            Arc(radius, radius, 2*radius, 2*radius, startAngle, arcAngle);
+            Arc(radius, radius, 2 * radius, 2 * radius, startAngle, arcAngle);
         }
+
         private void RecalculateAngles() {
             arcAngle = timeLeft / initialTimeLeft * initialArcAngle;
             startAngle = -arcAngle / 2f;
+
             // Debug.LogWarning($"arcAngle: {arcAngle} - startAngle {startAngle}");
         }
 

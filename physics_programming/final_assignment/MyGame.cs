@@ -207,7 +207,7 @@ namespace physics_programming.final_assignment {
                 StepThroughMovers();
         }
 
-        private static void Main() {
+        private static void MainFA() {
             new MyGame().Start();
         }
     }
