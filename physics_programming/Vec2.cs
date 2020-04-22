@@ -15,29 +15,62 @@ namespace physics_programming {
         }
 
         // ReSharper disable once InconsistentNaming
+        /// <summary>
+        ///     Sets the x and y components of this vector
+        /// </summary>
+        /// <param name="x">The new x component</param>
+        /// <param name="y">The new y component</param>
         public void SetXY(float x, float y) {
             this.x = x;
             this.y = y;
         }
 
+        /// <summary>
+        ///     Returns the magnitude of this vector
+        /// </summary>
         public float magnitude => (float) Math.Sqrt(x * x + y * y);
+        /// <summary>
+        ///     Returns the magnitude of this vector squared
+        /// </summary>
         public float sqrMagnitude => x * x + y * y;
+
+        /// <summary>
+        ///     Returns this vector normalized
+        /// </summary>
         public Vec2 normalized => magnitude > 0 ? this / magnitude : this;
 
+        /// <summary>
+        ///     Returns the dot product between this vector and <paramref name="other" />
+        /// </summary>
+        /// <param name="other">Other vector</param>
+        /// <returns>The dot product between this vector and <paramref name="other" /></returns>
         public float Dot(Vec2 other) {
             return x * other.x + y * other.y;
         }
 
+        /// <summary>
+        ///     Calculates and returns the normal vector of the current vector
+        /// </summary>
+        /// <returns>Normal of the vector</returns>
         public Vec2 Normal() {
             return new Vec2(-y, x).normalized;
         }
 
+        /// <summary>
+        ///     Reflects the current vector by <paramref name="normal" /> using the coefficient of reflection
+        ///     <paramref name="bounciness" />
+        /// </summary>
+        /// <param name="normal">The normal vector</param>
+        /// <param name="bounciness">The coefficient of reflection</param>
         public void Reflect(Vec2 normal, float bounciness = 1f) {
             var vOut = this - (1 + bounciness) * Dot(normal) * normal;
             x = vOut.x;
             y = vOut.y;
         }
 
+        /// <summary>
+        /// Normalizes the current vector
+        /// </summary>
         public void Normalize() {
             var mag = magnitude;
             if (mag < 0.000001f) // Console.Error.WriteLine($"Division by magnitude of zero while normalizing Vec2: {this}");
@@ -47,30 +80,54 @@ namespace physics_programming {
             y /= mag;
         }
 
+        /// <summary>
+        /// Sets the angle of the current vector
+        /// </summary>
+        /// <param name="degrees">Degrees</param>
         public void SetAngleDegrees(float degrees) {
             SetAngleRadians(Deg2Rad(degrees));
         }
 
+        /// <summary>
+        /// Sets the angle of the current vector
+        /// </summary>
+        /// <param name="radians">Radians</param>
         public void SetAngleRadians(float radians) {
             var m = magnitude;
             var unit = GetUnitVectorRad(radians);
             SetXY(unit.x * m, unit.y * m);
         }
 
+        /// <summary>
+        /// Returns the angle of the current vector in degrees
+        /// </summary>
+        /// <returns>The angle of the current vector in degrees</returns>
         public float GetAngleDegrees() {
             return Rad2Deg(GetAngleRadians());
         }
 
+        /// <summary>
+        /// Returns the angle of the current vector in radians
+        /// </summary>
+        /// <returns>The angle of the current vector in radians</returns>
         public float GetAngleRadians() {
             var n = normalized;
             var angle = Mathf.Atan2(n.y, n.x);
             return angle;
         }
 
+        /// <summary>
+        /// Rotates the current vector by <paramref name="degrees"/> degrees.
+        /// </summary>
+        /// <param name="degrees">Degrees</param>
         public void RotateDegrees(float degrees) {
             RotateRadians(Deg2Rad(degrees));
         }
 
+        /// <summary>
+        /// Rotates the current vector by <paramref name="radians"/> radians.
+        /// </summary>
+        /// <param name="radians">Radians</param>
         public void RotateRadians(float radians) {
             var c = Mathf.Cos(radians);
             var s = Mathf.Sin(radians);
@@ -192,18 +249,22 @@ namespace physics_programming {
             return $"({x},{y})";
         }
 
-        public static implicit operator Vec2(Vector2 v) {
-            return new Vec2(v.x, v.y);
+        public static implicit operator Vec2(Vector2 vector2) {
+            return new Vec2(vector2.x, vector2.y);
         }
 
-        public static implicit operator Vec2(Vector2Int v) {
-            return new Vec2(v.x, v.y);
+        public static implicit operator Vec2(Vector2Int vector2Int) {
+            return new Vec2(vector2Int.x, vector2Int.y);
         }
 
-        public static implicit operator Vec2(Vector3 v) {
-            return new Vec2(v.x, v.y);
+        public static implicit operator Vec2(Vector3 vector3) {
+            return new Vec2(vector3.x, vector3.y);
         }
 
+        public static implicit operator Vec2((float, float) valueTuple) {
+            return new Vec2(valueTuple.Item1, valueTuple.Item2);
+        }
+        
         public static readonly Vec2 Zero = new Vec2(0f, 0f);
         public static readonly Vec2 One = new Vec2(1f, 1f);
         public static readonly Vec2 Left = new Vec2(-1f, 0f);
