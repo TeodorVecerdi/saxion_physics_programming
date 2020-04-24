@@ -15,6 +15,10 @@ namespace physics_programming.final_assignment {
         public readonly List<LineSegment> Lines;
         public readonly List<TankAIBase> Enemies;
         public Player Player;
+        public Scene currentScene = null;
+        public Scene newScene = null;
+        
+        private Scene testScene = new TestScene();
 
         private bool paused;
         private bool stepped;
@@ -32,11 +36,12 @@ namespace physics_programming.final_assignment {
             DestructibleChunks = new List<DestructibleChunk>();
             Enemies = new List<TankAIBase>();
 
+            newScene = testScene;
             Restart();
             PrintInfo();
         }
 
-        private void AddLine(Vec2 start, Vec2 end, bool addReverseLine = false, bool addLineEndings = true, uint color = 0xff00ff00) {
+        public void AddLine(Vec2 start, Vec2 end, bool addReverseLine = false, bool addLineEndings = true, uint color = 0xffffffff) {
             var line = new LineSegment(start, end, color, 4);
             AddChild(line);
             Lines.Add(line);
@@ -52,7 +57,7 @@ namespace physics_programming.final_assignment {
             }
         }
 
-        private void AddDestructibleLine(Vec2 start, Vec2 end, bool addLineEndings = true, uint color = 0xff00ff00) {
+        public void AddDestructibleLine(Vec2 start, Vec2 end, bool addLineEndings = true, uint color = 0xff00ff00) {
             var line = new DoubleDestructibleLineSegment(start, end, color, 2);
             AddChild(line);
             DestructibleLines.Add(line);
@@ -102,65 +107,31 @@ namespace physics_programming.final_assignment {
 
         private void Restart() {
             Player?.Destroy();
-
             foreach (var enemy in Enemies)
                 enemy.Destroy();
-
             Enemies.Clear();
-
             foreach (var line in Lines)
                 line.Destroy();
             Lines.Clear();
-
             foreach (var mover in Movers)
                 mover.Destroy();
             Movers.Clear();
-
             foreach (var bullet in Bullets)
                 bullet.Destroy();
             Bullets.Clear();
-
             foreach (var destructibleLine in DestructibleLines)
                 destructibleLine.Destroy();
             DestructibleLines.Clear();
-
             foreach (var destructibleBlock in DestructibleBlocks)
                 destructibleBlock.Destroy();
             DestructibleBlocks.Clear();
             foreach (var destructibleChunk in DestructibleChunks)
                 destructibleChunk.Destroy();
             DestructibleChunks.Clear();
-
-            Player = new Player(500, 400, 300);
-            AddChild(Player);
-
-            // Enemies.Add(new SmartEnemyAI(100, 100));
-            // Enemies.Add(new DumbEnemy(600, 150));
-
-            AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
-            AddLine(new Vec2(Globals.WIDTH, 0), new Vec2(Globals.WIDTH, Globals.HEIGHT));
-            AddLine(new Vec2(0, 0), new Vec2(Globals.WIDTH, 0));
-            AddLine(new Vec2(Globals.WIDTH, Globals.HEIGHT), new Vec2(0, Globals.HEIGHT));
-
-            AddDestructibleLine(new Vec2(100, 300 + 200), new Vec2(50, 300 + 500));
-            AddDestructibleLine(new Vec2(50, 300 + 500), new Vec2(49, 300 + 600));
-            AddDestructibleLine(new Vec2(100, 300 + 200), new Vec2(500, 300 + 250));
-            AddDestructibleLine(new Vec2(100, 300 + 175), new Vec2(500, 300 + 225));
-            AddDestructibleLine(new Vec2(500, 300 + 250), new Vec2(550, 300 + 300));
-            AddDestructibleLine(new Vec2(550, 300 + 300), new Vec2(600, 300 + 375));
-            AddDestructibleLine(new Vec2(600, 300 + 375), new Vec2(625, 300 + 475));
-            AddDestructibleLine(new Vec2(625, 300 + 475), new Vec2(626, 300 + 600));
-
-            var block = new DestructibleBlock(30, new Vec2(200, 200), new Vec2(600, 200));
-            DestructibleBlocks.Add(block);
-            AddChild(block);
-
-            var block2 = new DestructibleBlock(30, new Vec2(750, 200), new Vec2(1050, 200));
-            DestructibleBlocks.Add(block2);
-            AddChild(block2);
-
-            Ball.Acceleration.SetXY(0, 0);
-
+            
+            currentScene?.Finalise(this);
+            currentScene = newScene;
+            currentScene?.Initialise(this);
             // movers.Add(new Ball(30, new Vec2(200, 300), new Vec2(0, 0)));
             foreach (var b in Movers)
                 AddChild(b);

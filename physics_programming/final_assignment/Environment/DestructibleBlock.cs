@@ -73,8 +73,8 @@ namespace physics_programming.final_assignment {
         }
 
         private void Draw() {
-            Stroke(Color.Crimson);
-            Fill(Color.Crimson, 127);
+            Stroke(Color.FromArgb(255, 110, 98));
+            Fill(Color.FromArgb(73, 21, 6), 127);
 
             // Fill(255, 255, 255, 100);
             Quad((int) BlockVertices[0].x, (int) BlockVertices[0].y,

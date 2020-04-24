@@ -32,8 +32,8 @@ namespace physics_programming.final_assignment {
 
         public void Draw() {
             Clear(Color.Transparent);
-            Stroke(Color.Crimson);
-            Fill(Color.Crimson, 127);
+            Stroke(Color.FromArgb(255, 110, 98));
+            Fill(Color.FromArgb(73, 21, 6), 127);
             Triangle(P0.x, P0.y, P1.x, P1.y, P2.x, P2.y);
         }
     }
