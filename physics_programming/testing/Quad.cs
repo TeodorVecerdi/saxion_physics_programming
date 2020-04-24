@@ -1,12 +1,13 @@
+using System;
 using DelaunayVoronoi;
 
 namespace physics_programming.testing {
     public class Quad {
-        public Point P1;
-        public Point P2;
-        public Point P3;
-        public Point P4;
-        public Quad(Point p1, Point p2, Point p3, Point p4) {
+        public Vec2 P1;
+        public Vec2 P2;
+        public Vec2 P3;
+        public Vec2 P4;
+        public Quad(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4) {
             P1 = p1;
             P2 = p2;
             P3 = p3;

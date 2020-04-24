@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using DelaunayVoronoi;
 using GXPEngine;
+using physics_programming.final_assignment;
 using Point = DelaunayVoronoi.Point;
 
 namespace physics_programming.testing {
@@ -18,10 +18,9 @@ namespace physics_programming.testing {
         private bool drawTriangulation;
         private bool drawVoronoi;
         private IEnumerable<Edge> edges;
-
         private IEnumerable<Point> points;
         private IEnumerable<Triangle> triangles;
-        private int pointAmount = 10;
+        private int pointAmount = 4;
 
         private MainAppTesting() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
@@ -31,22 +30,37 @@ namespace physics_programming.testing {
                 new Point(maxX + 50, 50 + 0 + 50), //2
                 new Point(maxX + 50, 50 + maxY + 50), //3
                 new Point(0 + 50, 50 + maxY + 50) //4
-                );
-            mappedQuad = new Quad(
-                new Point(0 + 50, 50 + 0 + maxY + 25 + 50), //1
-                new Point(maxX + 50, 50 + 0 + maxY + 25 + 50), //2
-                new Point(maxX + 50, 50 + maxY + maxY + 25 + 50), //3
-                new Point(0 + 50, 50 + maxY + maxY + 25 + 50) //4
-                );
+            );
+            var vec = new Vec2(50 + maxX, 300 + maxY + maxY) - new Vec2(50, 100 + maxY);
 
+            var block = new DestructibleBlock(maxY, new Vec2(50, 100 + maxY), vec.normalized * maxX + new Vec2(50, 100 + maxY));
+            // var block = new DestructibleBlock(maxY, new Point(maxX + 50, 50 + 0 + 50), new Point(0 + 50, 50 + 0 + 50));
+
+            // mappedQuad = new Quad(
+            //     (Vec2) (50f, 100f),
+            //     (Vec2) (850f, 300f),
+            //     (Vec2) (801.49287f, 494.0285f),
+            //     (Vec2) (1.49287f, 294.0285f)
+            // );
+            mappedQuad = new Quad(
+                block.BlockVertices[1],
+                block.BlockVertices[2],
+                block.BlockVertices[3],
+                block.BlockVertices[0]
+            );
+
+            // Debug.Log(((Vec2)mappedQuad.P2 - (Vec2)mappedQuad.P1).GetAngleDegrees());
             draw = new EasyDraw(Globals.WIDTH, Globals.HEIGHT, false);
             AddChild(draw);
-            var point = new Vec2(75, 125);
-            var projection = MapPointOnQuad(point, originalQuad, mappedQuad);
-            var expected = new Vec2(75, 125 + maxY + 25);
-            Debug.Log($"original: {point}, projected: {projection}, expected: {expected}");
-            Environment.Exit(-1);
+
+            // var point = new Vec2(75, 125);
+            // var projection = MapPointOnQuad(point, mappedQuad);
+            // var expected = new Vec2(75, 125 + maxY + 25);
+            // Debug.Log($"original: {point}, projected: {projection}, expected: {expected}");
+            // Environment.Exit(-1);
             Reset();
+            // Debug.Log((Vec2)points.ToList()[0]);
+            // Debug.Log((Vec2)triangles.ToList()[0].Vertices[0]);
         }
 
         private void Update() {
@@ -64,7 +78,7 @@ namespace physics_programming.testing {
                 drawTriangulation = !drawTriangulation;
                 Draw();
             }
-            
+
             if (Input.GetKeyDown(Key.FOUR)) {
                 drawProjection = !drawProjection;
                 Draw();
@@ -102,24 +116,29 @@ namespace physics_programming.testing {
         }
 
         private void DrawPoints(IEnumerable<Point> points, Quad quad = null) {
-            var offsetX = quad == null ? 0f : (float) quad.P4.X;
-            var offsetY = quad == null ? 0f : (float) quad.P4.Y;
+            var offsetX = quad == null ? 0f : (float) quad.P1.x;
+            var offsetY = quad == null ? 0f : (float) quad.P1.y;
+            var i = 0;
             foreach (var point in points) {
+                var p = new Vec2((float) point.X + offsetX, (float) point.Y + offsetY);
                 draw.NoStroke();
                 draw.Fill(Color.Chartreuse);
-                draw.Ellipse((float) point.X + offsetX, (float) point.Y + offsetY, 8, 8);
+                draw.Ellipse(p.x, p.y, 8, 8);
+                draw.Text($"{i}", p.x, p.y);
                 if (drawProjection) {
-                    var vec2Point = new Vec2((float) point.X, (float) point.Y);
-                    var projectedPoint = MapPointOnQuad(vec2Point, originalQuad, mappedQuad);
+                    var projectedPoint = MapPointOnQuad2(p, originalQuad, mappedQuad);
                     draw.Fill(Color.Gold);
-                    draw.Ellipse(projectedPoint.x + offsetX, projectedPoint.y + offsetY, 8, 8);
+                    draw.Ellipse(projectedPoint.x, projectedPoint.y, 8, 8);
+                    draw.Text($"{i}", projectedPoint.x, projectedPoint.y);
                 }
+
+                i++;
             }
         }
 
         private void DrawVoronoi(IEnumerable<Edge> edges, Quad quad = null) {
-            var offsetX = quad == null ? 0f : (float) quad.P4.X;
-            var offsetY = quad == null ? 0f : (float) quad.P4.Y;
+            var offsetX = quad == null ? 0f : (float) quad.P1.x;
+            var offsetY = quad == null ? 0f : (float) quad.P1.y;
             foreach (var edge in edges) {
                 draw.NoFill();
                 draw.Stroke(Color.DodgerBlue);
@@ -128,16 +147,28 @@ namespace physics_programming.testing {
         }
 
         private void DrawTriangulation(IEnumerable<Triangle> triangles, Quad quad = null) {
-            var offsetX = quad == null ? 0f : (float) quad.P4.X;
-            var offsetY = quad == null ? 0f : (float) quad.P4.Y;
+            var offsetX = quad == null ? 0f : (float) quad.P1.x;
+            var offsetY = quad == null ? 0f : (float) quad.P1.y;
             foreach (var triangle in triangles) {
+                var v0 = (Vec2) triangle.Vertices[0] + new Vec2(offsetX, offsetY);
+                var v1 = (Vec2) triangle.Vertices[1] + new Vec2(offsetX, offsetY);
+                var v2 = (Vec2) triangle.Vertices[2] + new Vec2(offsetX, offsetY);
+
                 draw.Stroke(Color.Crimson);
                 draw.NoFill();
 
                 // draw.Fill(Color.Crimson, 127);
-                draw.Triangle((float) triangle.Vertices[0].X + offsetX, (float) triangle.Vertices[0].Y + offsetY,
-                    (float) triangle.Vertices[1].X + offsetX, (float) triangle.Vertices[1].Y + offsetY,
-                    (float) triangle.Vertices[2].X + offsetX, (float) triangle.Vertices[2].Y + offsetY);
+                draw.Triangle(v0.x, v0.y,
+                    v1.x, v1.y,
+                    v2.x, v2.y);
+
+                if (drawProjection) {
+                    draw.Stroke(Color.DarkOrange);
+                    var projectedTriangle = MapTriangleOnQuad(v0,v1,v2, originalQuad, mappedQuad);
+                    draw.Triangle((float) projectedTriangle.Vertices[0].X, (float) projectedTriangle.Vertices[0].Y,
+                        (float) projectedTriangle.Vertices[1].X, (float) projectedTriangle.Vertices[1].Y ,
+                        (float) projectedTriangle.Vertices[2].X, (float) projectedTriangle.Vertices[2].Y);
+                }
             }
         }
 
@@ -163,28 +194,32 @@ namespace physics_programming.testing {
         private void DrawQuad(Quad quad, Color fill, Color stroke) {
             draw.Fill(fill, 127);
             draw.Stroke(stroke);
-            draw.Quad((float) quad.P1.X, (float) quad.P1.Y, (float) quad.P2.X, (float) quad.P2.Y, (float) quad.P3.X, (float) quad.P3.Y, (float) quad.P4.X, (float) quad.P4.Y);
+            draw.Quad((float) quad.P1.x, (float) quad.P1.y, (float) quad.P2.x, (float) quad.P2.y, (float) quad.P3.x, (float) quad.P3.y, (float) quad.P4.x, (float) quad.P4.y);
             draw.Fill(stroke);
-            draw.Ellipse((float) quad.P1.X, (float) quad.P1.Y, 8, 8);
-            draw.Ellipse((float) quad.P2.X, (float) quad.P2.Y, 8, 8);
-            draw.Ellipse((float) quad.P3.X, (float) quad.P3.Y, 8, 8);
-            draw.Ellipse((float) quad.P4.X, (float) quad.P4.Y, 8, 8);
-        }
+            draw.Ellipse((float) quad.P1.x, (float) quad.P1.y, 8, 8);
+            draw.Ellipse((float) quad.P2.x, (float) quad.P2.y, 8, 8);
+            draw.Ellipse((float) quad.P3.x, (float) quad.P3.y, 8, 8);
+            draw.Ellipse((float) quad.P4.x, (float) quad.P4.y, 8, 8);
 
+            // draw.Text("1", (float) quad.P1.x, (float) quad.P1.y);
+            // draw.Text("2", (float) quad.P2.x, (float) quad.P2.y);
+            // draw.Text("3", (float) quad.P3.x, (float) quad.P3.y);
+            // draw.Text("4", (float) quad.P4.x, (float) quad.P4.y);
+        }
         private Vec2 MapPointOnQuad(Vec2 point, Quad original, Quad target) {
-            var p01 = new Vec2((float) original.P1.X, (float) original.P1.Y);
-            var p02 = new Vec2((float) original.P2.X, (float) original.P2.Y);
-            var p03 = new Vec2((float) original.P3.X, (float) original.P3.Y);
-            var p04 = new Vec2((float) original.P4.X, (float) original.P4.Y);
+            var p01 = new Vec2((float) original.P1.x, (float) original.P1.y);
+            var p02 = new Vec2((float) original.P2.x, (float) original.P2.y);
+            var p03 = new Vec2((float) original.P3.x, (float) original.P3.y);
+            var p04 = new Vec2((float) original.P4.x, (float) original.P4.y);
             var a0 = p01;
             var b0 = p02 - p01;
             var c0 = p03 - p01;
             var d0 = p04 - p02 - p03 + p01;
 
-            var p11 = new Vec2((float) target.P1.X, (float) target.P1.Y);
-            var p12 = new Vec2((float) target.P2.X, (float) target.P2.Y);
-            var p13 = new Vec2((float) target.P3.X, (float) target.P3.Y);
-            var p14 = new Vec2((float) target.P4.X, (float) target.P4.Y);
+            var p11 = new Vec2((float) target.P1.x, (float) target.P1.y);
+            var p12 = new Vec2((float) target.P2.x, (float) target.P2.y);
+            var p13 = new Vec2((float) target.P3.x, (float) target.P3.y);
+            var p14 = new Vec2((float) target.P4.x, (float) target.P4.y);
             var a1 = p11;
             var b1 = p12 - p11;
             var c1 = p13 - p11;
@@ -203,16 +238,11 @@ namespace physics_programming.testing {
             var A = -h * b / c;
             var B = h * a / c;
             var C = -f;
-            var delta = B*B - 4 * A * C;
+            var delta = B * B - 4 * A * C;
             var sqrt_delta = Mathf.Sqrt(delta);
             var ee1 = (-B + sqrt_delta) / 2 * A;
             var ee2 = (-B - sqrt_delta) / 2 * A;
-            
-            // var ee1 = (-(g + h * a / c) + Mathf.Sqrt(delta)) / -2f * h * b / c;
-            // var ee2 = (-(g + h * a / c) - Mathf.Sqrt(delta)) / -2f * h * b / c;
-            // var ee1 = (-(g + h * a / c) + Mathf.Sqrt(delta)) / 2f * f;
-            // var ee2 = (-(g + h * a / c) - Mathf.Sqrt(delta)) / 2f * f;
-            Debug.LogWarning($"ee1: {ee1}, ee2: {ee2}");
+
             float ee;
             if (ee1 >= 0f && ee1 <= 1f) ee = ee1;
             else ee = ee2;
@@ -220,6 +250,27 @@ namespace physics_programming.testing {
 
             var p1 = a1 + b1 * ee + c1 * nn + d1 * ee * nn;
             return p1;
+        }
+        private Vec2 MapPointOnQuad2(Vec2 point, Quad original, Quad target) {
+            var v1 = (Vec2) original.P2 - (Vec2) original.P1;
+            var v2 = (Vec2) target.P2 - (Vec2) target.P1;
+
+            var dot = v1.Dot(v2);
+            var det = v1.Det(v2);
+            var angle = Mathf.Atan2(det, dot);
+            var translatedPoint = point - original.P1;
+            var rotatedPoint = translatedPoint;
+            rotatedPoint.RotateRadians(angle);
+            var translatedRotatedPoint = rotatedPoint + target.P1;
+            return translatedRotatedPoint;
+        }
+
+        private Triangle MapTriangleOnQuad(Vec2 v0, Vec2 v1, Vec2 v2, Quad original, Quad target) {
+            var p0 = MapPointOnQuad2(v0, original, target);
+            var p1 = MapPointOnQuad2(v1, original, target);
+            var p2 = MapPointOnQuad2(v2, original, target);
+            
+            return new Triangle(p0, p1, p2);
         }
 
         public static void Main() {

@@ -12,7 +12,7 @@ namespace physics_programming.final_assignment {
         public readonly LineSegment Side2;
 
         public bool ShouldRemove;
-        private readonly List<Vec2> blockVertices;
+        public readonly List<Vec2> BlockVertices;
 
         private float blockWidth;
         private Vec2 end;
@@ -51,8 +51,8 @@ namespace physics_programming.final_assignment {
             AddChild(Side2);
 
             //Setup vertices and draw
-            blockVertices = new List<Vec2>();
-            blockVertices.AddRange(new[] {Length1.Start, Length2.End, Length2.Start, Length1.End});
+            BlockVertices = new List<Vec2>();
+            BlockVertices.AddRange(new[] {Length1.Start, Length2.End, Length2.Start, Length1.End});
             Draw();
         }
 
@@ -60,7 +60,7 @@ namespace physics_programming.final_assignment {
             blockWidth = (vertices[1] - vertices[0]).magnitude;
             start = vertices[0];
             end = vertices[3];
-            blockVertices = vertices;
+            BlockVertices = vertices;
             Length1 = new LineSegment(vertices[0], vertices[3]);
             Length2 = new LineSegment(vertices[2], vertices[1]);
             Side1 = new LineSegment(vertices[1], vertices[0]);
@@ -80,10 +80,10 @@ namespace physics_programming.final_assignment {
 
         private void Draw() {
             Fill(255, 255, 255, 100);
-            Quad((int) blockVertices[0].x, (int) blockVertices[0].y,
-                (int) blockVertices[1].x, (int) blockVertices[1].y,
-                (int) blockVertices[2].x, (int) blockVertices[2].y,
-                (int) blockVertices[3].x, (int) blockVertices[3].y
+            Quad((int) BlockVertices[0].x, (int) BlockVertices[0].y,
+                (int) BlockVertices[1].x, (int) BlockVertices[1].y,
+                (int) BlockVertices[2].x, (int) BlockVertices[2].y,
+                (int) BlockVertices[3].x, (int) BlockVertices[3].y
             );
         }
 

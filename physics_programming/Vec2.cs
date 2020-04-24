@@ -1,4 +1,5 @@
 using System;
+using DelaunayVoronoi;
 using GXPEngine;
 
 namespace physics_programming {
@@ -47,6 +48,16 @@ namespace physics_programming {
         public float Dot(Vec2 other) {
             return x * other.x + y * other.y;
         }
+        
+        /// <summary>
+        ///     Returns the determinant between this vector and <paramref name="other" />
+        /// </summary>
+        /// <param name="other">Other vector</param>
+        /// <returns>The determinant between this vector and <paramref name="other" /></returns>
+        public float Det(Vec2 other) {
+            return x * other.y - y * other.x;
+        }
+
 
         /// <summary>
         ///     Calculates and returns the normal vector of the current vector
@@ -69,7 +80,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Normalizes the current vector
+        ///     Normalizes the current vector
         /// </summary>
         public void Normalize() {
             var mag = magnitude;
@@ -81,7 +92,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Sets the angle of the current vector
+        ///     Sets the angle of the current vector
         /// </summary>
         /// <param name="degrees">Degrees</param>
         public void SetAngleDegrees(float degrees) {
@@ -89,7 +100,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Sets the angle of the current vector
+        ///     Sets the angle of the current vector
         /// </summary>
         /// <param name="radians">Radians</param>
         public void SetAngleRadians(float radians) {
@@ -99,7 +110,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Returns the angle of the current vector in degrees
+        ///     Returns the angle of the current vector in degrees
         /// </summary>
         /// <returns>The angle of the current vector in degrees</returns>
         public float GetAngleDegrees() {
@@ -107,7 +118,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Returns the angle of the current vector in radians
+        ///     Returns the angle of the current vector in radians
         /// </summary>
         /// <returns>The angle of the current vector in radians</returns>
         public float GetAngleRadians() {
@@ -117,7 +128,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Rotates the current vector by <paramref name="degrees"/> degrees.
+        ///     Rotates the current vector by <paramref name="degrees" /> degrees.
         /// </summary>
         /// <param name="degrees">Degrees</param>
         public void RotateDegrees(float degrees) {
@@ -125,7 +136,7 @@ namespace physics_programming {
         }
 
         /// <summary>
-        /// Rotates the current vector by <paramref name="radians"/> radians.
+        ///     Rotates the current vector by <paramref name="radians" /> radians.
         /// </summary>
         /// <param name="radians">Radians</param>
         public void RotateRadians(float radians) {
@@ -264,7 +275,15 @@ namespace physics_programming {
         public static implicit operator Vec2((float, float) valueTuple) {
             return new Vec2(valueTuple.Item1, valueTuple.Item2);
         }
-        
+
+        public static implicit operator Vec2(Point point) {
+            return new Vec2((float) point.X, (float) point.Y);
+        }
+
+        public static implicit operator Point(Vec2 vec2) {
+            return new Point(vec2.x, vec2.y);
+        }
+
         public static readonly Vec2 Zero = new Vec2(0f, 0f);
         public static readonly Vec2 One = new Vec2(1f, 1f);
         public static readonly Vec2 Left = new Vec2(-1f, 0f);
