@@ -206,54 +206,9 @@ namespace physics_programming.testing {
             // draw.Text("3", (float) quad.P3.x, (float) quad.P3.y);
             // draw.Text("4", (float) quad.P4.x, (float) quad.P4.y);
         }
-        private Vec2 MapPointOnQuad(Vec2 point, Quad original, Quad target) {
-            var p01 = new Vec2((float) original.P1.x, (float) original.P1.y);
-            var p02 = new Vec2((float) original.P2.x, (float) original.P2.y);
-            var p03 = new Vec2((float) original.P3.x, (float) original.P3.y);
-            var p04 = new Vec2((float) original.P4.x, (float) original.P4.y);
-            var a0 = p01;
-            var b0 = p02 - p01;
-            var c0 = p03 - p01;
-            var d0 = p04 - p02 - p03 + p01;
-
-            var p11 = new Vec2((float) target.P1.x, (float) target.P1.y);
-            var p12 = new Vec2((float) target.P2.x, (float) target.P2.y);
-            var p13 = new Vec2((float) target.P3.x, (float) target.P3.y);
-            var p14 = new Vec2((float) target.P4.x, (float) target.P4.y);
-            var a1 = p11;
-            var b1 = p12 - p11;
-            var c1 = p13 - p11;
-            var d1 = p14 - p12 - p13 + p11;
-
-            var u = b0;
-            var v = c0;
-
-            var p0 = point;
-            var a = (p0 - a0).Dot(u);
-            var b = b0.Dot(u);
-            var c = c0.Dot(u);
-            var f = (p0 - a0).Dot(v);
-            var g = b0.Dot(v);
-            var h = d0.Dot(v);
-            var A = -h * b / c;
-            var B = h * a / c;
-            var C = -f;
-            var delta = B * B - 4 * A * C;
-            var sqrt_delta = Mathf.Sqrt(delta);
-            var ee1 = (-B + sqrt_delta) / 2 * A;
-            var ee2 = (-B - sqrt_delta) / 2 * A;
-
-            float ee;
-            if (ee1 >= 0f && ee1 <= 1f) ee = ee1;
-            else ee = ee2;
-            var nn = (a - b * ee) / c;
-
-            var p1 = a1 + b1 * ee + c1 * nn + d1 * ee * nn;
-            return p1;
-        }
         private Vec2 MapPointOnQuad2(Vec2 point, Quad original, Quad target) {
-            var v1 = (Vec2) original.P2 - (Vec2) original.P1;
-            var v2 = (Vec2) target.P2 - (Vec2) target.P1;
+            var v1 =  original.P2 -  original.P1;
+            var v2 =  target.P2 -  target.P1;
 
             var dot = v1.Dot(v2);
             var det = v1.Det(v2);
@@ -273,7 +228,7 @@ namespace physics_programming.testing {
             return new Triangle(p0, p1, p2);
         }
 
-        public static void Main() {
+        public static void MainT() {
             new MainAppTesting().Start();
         }
     }

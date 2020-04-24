@@ -18,6 +18,7 @@ namespace physics_programming {
         public static class World {
             public const float BulletDLSDamage = 10;
             public const float DestructibleLineMinLength = 10;
+            public const int BlockDestructionPoints = 6;
         }
     }
 }

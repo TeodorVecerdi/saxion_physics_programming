@@ -43,10 +43,16 @@ namespace physics_programming.final_assignment {
 
         private void Collisions() {
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
-            Colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
+            Colliders.Select(collider => collider.FindEarliestLineCollision(Position, Velocity, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
-            Colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity * Time.deltaTime, OldPosition, rotation))
+            Colliders.Select(collider => collider.FindEarliestDestructibleLineCollision(Position, Velocity, OldPosition, rotation))
+                .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
+                .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
+            Colliders.Select(collider => collider.FindEarliestChunkCollision(Position, Velocity, OldPosition, rotation))
+                .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
+                .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
+            Colliders.Select(collider => collider.FindEarliestBlockCollision(Position, Velocity, OldPosition, rotation))
                 .Where(earliest => earliest != null && earliest.TimeOfImpact < collisionInfo.TimeOfImpact).ToList()
                 .ForEach(earliest => collisionInfo = new CollisionInfo(earliest.Normal, null, earliest.TimeOfImpact));
             if (!float.IsPositiveInfinity(collisionInfo.TimeOfImpact))

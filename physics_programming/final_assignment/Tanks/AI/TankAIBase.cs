@@ -6,10 +6,10 @@ namespace physics_programming.final_assignment {
     public abstract class TankAIBase : GameObject {
         public Tank Tank;
         protected const float AccuracyDegreeVariation = 30f;
-        protected readonly float Accuracy;
-        protected readonly float TimeToShoot;
 
         private readonly bool waitToShoot;
+        protected readonly float Accuracy;
+        protected readonly float TimeToShoot;
         protected float TimeLeftToShoot;
 
         protected TankAIBase(float accuracy, float timeToShoot = 2f) {

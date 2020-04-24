@@ -34,6 +34,7 @@ namespace physics_programming.final_assignment {
         }
 
         public void Step() {
+            if (Dead) return;
             var g = (MyGame) game;
             OldPosition = Position;
             Position += Velocity * Time.deltaTime;
@@ -66,30 +67,31 @@ namespace physics_programming.final_assignment {
                 g.AddChild(line);
             });
 
-            //// BLOCKS
-            var blocksToAdd = new List<DestructibleBlock>();
-            foreach (var destructibleBlock in g.DestructibleBlocks) {
-                var (block1, block2, collisionInfo) = CollisionUtils.BulletBlockCollision(this, destructibleBlock);
-                if (block1 == null && block2 == null && collisionInfo == null) continue;
-                if(block1 != null || block2 != null ) destructibleBlock.ShouldRemove = true;
-                if (block1 != null) blocksToAdd.Add(block1);
-                if (block2 != null) blocksToAdd.Add(block2);
-
-                if (collisionInfo != null) {
-                    Position = OldPosition + Velocity * Time.deltaTime * collisionInfo.TimeOfImpact;
-                    Velocity.Reflect(collisionInfo.Normal, Bounciness);
-                    rotation = Velocity.GetAngleDegrees();
-                }
+            //// CHUNKS
+            foreach (var destructibleChunk in g.DestructibleChunks) {
+                if (!CollisionUtils.BulletChunkCollision(this, destructibleChunk)) continue;
+                destructibleChunk.ShouldRemove = true;
 
                 if (bouncesLeft <= 0) Dead = true;
-                else {
-                    bouncesLeft--;
-                }
+                else bouncesLeft--;
             }
 
-            blocksToAdd.ForEach(block => {
-                g.DestructibleBlocks.Add(block);
-                g.AddChild(block);
+            //// BLOCKS
+            var chunksToAdd = new List<DestructibleChunk>();
+            foreach (var destructibleBlock in g.DestructibleBlocks) {
+                if (!CollisionUtils.BulletBlockCollision(this, destructibleBlock)) continue;
+
+                destructibleBlock.ShouldRemove = true;
+                var chunks = DestructibleBlock.Destruct(destructibleBlock);
+                chunksToAdd.AddRange(chunks);
+
+                if (bouncesLeft <= 0) Dead = true;
+                else bouncesLeft--;
+            }
+
+            chunksToAdd.ForEach(chunk => {
+                g.DestructibleChunks.Add(chunk);
+                g.AddChild(chunk);
             });
 
             var availableTanks = new List<Tank>();
@@ -117,8 +119,7 @@ namespace physics_programming.final_assignment {
             var myGame = (MyGame) game;
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
 
-            for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
-                var line = myGame.GetLine(i);
+            foreach (var line in myGame.Lines) {
                 var currentCollisionInfo = CollisionUtils.CircleLineCollision(Position, OldPosition, Velocity * Time.deltaTime, Radius, line);
                 if (currentCollisionInfo != null && currentCollisionInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(currentCollisionInfo.Normal, null, currentCollisionInfo.TimeOfImpact);

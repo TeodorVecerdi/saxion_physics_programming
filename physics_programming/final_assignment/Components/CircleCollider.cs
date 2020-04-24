@@ -53,7 +53,7 @@ namespace physics_programming.final_assignment {
             var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
 
             foreach (var line in myGame.DestructibleLines) {
-                var collInfo = CollisionUtils.CircleDestructibleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, line);
+                var collInfo = CollisionUtils.CircleDestructibleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity * Time.deltaTime, Radius, line);
                 if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
             }
@@ -68,9 +68,40 @@ namespace physics_programming.final_assignment {
             var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
             var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
 
-            for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
-                var line = myGame.GetLine(i);
-                var collInfo = CollisionUtils.CircleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, line);
+            foreach (var line in myGame.Lines) {
+                var collInfo = CollisionUtils.CircleLineCollision(rotatedPosition, rotatedOldPosition, parentVelocity * Time.deltaTime, Radius, line);
+                if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
+                    collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
+            }
+
+            return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
+        }
+
+        public CollisionInfo FindEarliestChunkCollision(Vec2 parentPosition, Vec2 parentVelocity, Vec2 parentOldPosition, float parentRotation) {
+            var myGame = (MyGame) game;
+            var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
+
+            var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
+            var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
+
+            foreach (var chunk in myGame.DestructibleChunks) {
+                var collInfo = CollisionUtils.CircleChunkCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, chunk);
+                if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
+                    collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
+            }
+
+            return float.IsPositiveInfinity(collisionInfo.TimeOfImpact) ? null : collisionInfo;
+        }
+
+        public CollisionInfo FindEarliestBlockCollision(Vec2 parentPosition, Vec2 parentVelocity, Vec2 parentOldPosition, float parentRotation) {
+            var myGame = (MyGame) game;
+            var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
+
+            var (worldPosition, worldOldPosition) = LocalToWorldCoords(Position, OldPosition, parentPosition, parentOldPosition);
+            var (rotatedPosition, rotatedOldPosition) = ApplyRotation(worldPosition, parentPosition, worldOldPosition, parentOldPosition, parentRotation);
+
+            foreach (var block in myGame.DestructibleBlocks) {
+                var collInfo = CollisionUtils.CircleBlockCollision(rotatedPosition, rotatedOldPosition, parentVelocity, Radius, block);
                 if (collInfo != null && collInfo.TimeOfImpact < collisionInfo.TimeOfImpact)
                     collisionInfo = new CollisionInfo(collInfo.Normal, null, collInfo.TimeOfImpact);
             }

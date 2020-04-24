@@ -1,22 +1,40 @@
 using System.Drawing;
-using DelaunayVoronoi;
 using GXPEngine;
+using physics_programming.final_assignment.Components;
 
 namespace physics_programming.final_assignment {
     public class DestructibleChunk : EasyDraw {
-        public Components.Triangle Triangle;
+        public readonly LineSegment LineSegment0;
+        public readonly LineSegment LineSegment1;
+        public readonly LineSegment LineSegment2;
+        public readonly LineSegment RLineSegment0;
+        public readonly LineSegment RLineSegment1;
+        public readonly LineSegment RLineSegment2;
 
-        public DestructibleChunk(Components.Triangle triangle) : base(Globals.WIDTH, Globals.HEIGHT) {
-            Triangle = triangle;
+        public bool ShouldRemove;
+        public Vec2 P0;
+        public Vec2 P1;
+        public Vec2 P2;
+
+        public DestructibleChunk(Vec2 p0, Vec2 p1, Vec2 p2) : base(Globals.WIDTH, Globals.HEIGHT) {
+            P0 = p0;
+            P1 = p1;
+            P2 = p2;
+
+            LineSegment0 = new LineSegment(P0, P1);
+            LineSegment1 = new LineSegment(P1, P2);
+            LineSegment2 = new LineSegment(P2, P0);
+            RLineSegment0 = new LineSegment(P1, P0);
+            RLineSegment1 = new LineSegment(P2, P1);
+            RLineSegment2 = new LineSegment(P0, P2);
+            Draw();
         }
 
         public void Draw() {
             Clear(Color.Transparent);
             Stroke(Color.Crimson);
             Fill(Color.Crimson, 127);
-            base.Triangle(Triangle.P1.x, Triangle.P1.y,
-                Triangle.P2.x, Triangle.P2.y,
-                Triangle.P3.x, Triangle.P3.y);
+            Triangle(P0.x, P0.y, P1.x, P1.y, P2.x, P2.y);
         }
     }
 }

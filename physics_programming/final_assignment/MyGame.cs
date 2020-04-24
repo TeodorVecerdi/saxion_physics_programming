@@ -7,14 +7,15 @@ using physics_programming.final_assignment.Components;
 
 namespace physics_programming.final_assignment {
     public class MyGame : Game {
-        public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
+        public readonly List<Ball> Movers;
+        public readonly List<Bullet> Bullets;
         public readonly List<DestructibleBlock> DestructibleBlocks;
-        public List<TankAIBase> Enemies;
+        public readonly List<DestructibleChunk> DestructibleChunks;
+        public readonly List<DoubleDestructibleLineSegment> DestructibleLines;
+        public readonly List<LineSegment> Lines;
+        public readonly List<TankAIBase> Enemies;
         public Player Player;
 
-        private readonly List<Ball> movers;
-        private readonly List<Bullet> bullets;
-        private readonly List<LineSegment> lines;
         private bool paused;
         private bool stepped;
 
@@ -23,50 +24,31 @@ namespace physics_programming.final_assignment {
         public MyGame() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
 
-            movers = new List<Ball>();
-            lines = new List<LineSegment>();
-            bullets = new List<Bullet>();
+            Movers = new List<Ball>();
+            Lines = new List<LineSegment>();
+            Bullets = new List<Bullet>();
             DestructibleLines = new List<DoubleDestructibleLineSegment>();
             DestructibleBlocks = new List<DestructibleBlock>();
+            DestructibleChunks = new List<DestructibleChunk>();
             Enemies = new List<TankAIBase>();
 
             Restart();
             PrintInfo();
         }
 
-        public int GetNumberOfLines() {
-            return lines.Count;
-        }
-
-        public LineSegment GetLine(int index) {
-            if (index >= 0 && index < lines.Count)
-                return lines[index];
-            return null;
-        }
-
-        public int GetNumberOfMovers() {
-            return movers.Count;
-        }
-
-        public Ball GetMover(int index) {
-            if (index >= 0 && index < movers.Count)
-                return movers[index];
-            return null;
-        }
-
         private void AddLine(Vec2 start, Vec2 end, bool addReverseLine = false, bool addLineEndings = true, uint color = 0xff00ff00) {
             var line = new LineSegment(start, end, color, 4);
             AddChild(line);
-            lines.Add(line);
+            Lines.Add(line);
             if (addReverseLine) {
                 var reverseLine = new LineSegment(end, start, color, 4);
                 AddChild(reverseLine);
-                lines.Add(reverseLine);
+                Lines.Add(reverseLine);
             }
 
             if (addLineEndings) {
-                movers.Add(new Ball(0, start, isKinematic: true));
-                movers.Add(new Ball(0, end, isKinematic: true));
+                Movers.Add(new Ball(0, start, isKinematic: true));
+                Movers.Add(new Ball(0, end, isKinematic: true));
             }
         }
 
@@ -76,13 +58,13 @@ namespace physics_programming.final_assignment {
             DestructibleLines.Add(line);
 
             if (addLineEndings) {
-                movers.Add(new Ball(0, start, isKinematic: true));
-                movers.Add(new Ball(0, end, isKinematic: true));
+                Movers.Add(new Ball(0, start, isKinematic: true));
+                Movers.Add(new Ball(0, end, isKinematic: true));
             }
         }
 
         public void AddBullet(Bullet bullet) {
-            bullets.Add(bullet);
+            Bullets.Add(bullet);
             AddChild(bullet);
         }
 
@@ -126,17 +108,17 @@ namespace physics_programming.final_assignment {
 
             Enemies.Clear();
 
-            foreach (var line in lines)
+            foreach (var line in Lines)
                 line.Destroy();
-            lines.Clear();
+            Lines.Clear();
 
-            foreach (var mover in movers)
+            foreach (var mover in Movers)
                 mover.Destroy();
-            movers.Clear();
+            Movers.Clear();
 
-            foreach (var bullet in bullets)
+            foreach (var bullet in Bullets)
                 bullet.Destroy();
-            bullets.Clear();
+            Bullets.Clear();
 
             foreach (var destructibleLine in DestructibleLines)
                 destructibleLine.Destroy();
@@ -145,6 +127,9 @@ namespace physics_programming.final_assignment {
             foreach (var destructibleBlock in DestructibleBlocks)
                 destructibleBlock.Destroy();
             DestructibleBlocks.Clear();
+            foreach (var destructibleChunk in DestructibleChunks)
+                destructibleChunk.Destroy();
+            DestructibleChunks.Clear();
 
             Player = new Player(500, 400, 300);
             AddChild(Player);
@@ -169,7 +154,7 @@ namespace physics_programming.final_assignment {
             var block = new DestructibleBlock(30, new Vec2(200, 200), new Vec2(600, 200));
             DestructibleBlocks.Add(block);
             AddChild(block);
-            
+
             var block2 = new DestructibleBlock(30, new Vec2(750, 200), new Vec2(1050, 200));
             DestructibleBlocks.Add(block2);
             AddChild(block2);
@@ -177,7 +162,7 @@ namespace physics_programming.final_assignment {
             Ball.Acceleration.SetXY(0, 0);
 
             // movers.Add(new Ball(30, new Vec2(200, 300), new Vec2(0, 0)));
-            foreach (var b in movers)
+            foreach (var b in Movers)
                 AddChild(b);
             foreach (var enemy in Enemies)
                 AddChild(enemy);
@@ -186,21 +171,21 @@ namespace physics_programming.final_assignment {
         private void StepThroughMovers() {
             if (stepped) {
                 stepIndex++;
-                if (stepIndex >= movers.Count)
+                if (stepIndex >= Movers.Count)
                     stepIndex = 0;
-                if (!movers[stepIndex].IsKinematic)
-                    movers[stepIndex].Step();
-            } else movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
+                if (!Movers[stepIndex].IsKinematic)
+                    Movers[stepIndex].Step();
+            } else Movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
 
             UpdateBullets();
             UpdateDestructibleEnvironment();
         }
 
         private void UpdateBullets() {
-            foreach (var bullet in bullets) bullet.Step();
-            bullets.Where(b => b.Dead).ToList().ForEach(bullet => {
+            foreach (var bullet in Bullets) bullet.Step();
+            Bullets.Where(b => b.Dead).ToList().ForEach(bullet => {
                 bullet.Destroy();
-                bullets.Remove(bullet);
+                Bullets.Remove(bullet);
             });
         }
 
@@ -213,6 +198,13 @@ namespace physics_programming.final_assignment {
                 .ToList().ForEach(l => {
                     l.Destroy();
                     DestructibleLines.Remove(l);
+                });
+
+            //// CHUNKS
+            DestructibleChunks.Where(chunk => chunk.ShouldRemove)
+                .ToList().ForEach(chunk => {
+                    chunk.Destroy();
+                    DestructibleChunks.Remove(chunk);
                 });
 
             //// BLOCKS
@@ -230,7 +222,7 @@ namespace physics_programming.final_assignment {
                 StepThroughMovers();
         }
 
-        private static void MainFA() {
+        private static void Main() {
             new MyGame().Start();
         }
     }

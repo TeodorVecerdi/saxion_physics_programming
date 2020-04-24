@@ -83,8 +83,7 @@ namespace physics_programming.final_assignment {
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
 
             // Check other movers:			
-            for (var i = 0; i < myGame.GetNumberOfMovers(); i++) {
-                var other = myGame.GetMover(i);
+            foreach (var other in myGame.Movers)
                 if (other != this) {
                     // calculations
                     var u = Position - other.Position;
@@ -106,7 +105,6 @@ namespace physics_programming.final_assignment {
                     if (t < collisionInfo.TimeOfImpact)
                         collisionInfo = new CollisionInfo(normal, other, t);
                 }
-            }
 
             if (float.IsPositiveInfinity(collisionInfo.TimeOfImpact)) return null;
             return collisionInfo;
@@ -117,8 +115,7 @@ namespace physics_programming.final_assignment {
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);
 
             // Check other movers:			
-            for (var i = 0; i < myGame.GetNumberOfLines(); i++) {
-                var line = myGame.GetLine(i);
+            foreach (var line in myGame.Lines) {
                 var segmentVec = line.End - line.Start;
                 var normalizedSegmentVec = segmentVec.normalized;
                 var segmentLengthSqr = segmentVec.sqrMagnitude;

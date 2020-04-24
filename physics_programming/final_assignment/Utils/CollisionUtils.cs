@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GXPEngine;
 using physics_programming.final_assignment.Components;
 
@@ -70,32 +71,51 @@ namespace physics_programming.final_assignment.Utils {
             return ValueTuple.Create<DoubleDestructibleLineSegment, DoubleDestructibleLineSegment>(null, null);
         }
 
-        public static (DestructibleBlock, DestructibleBlock, CollisionInfo) BulletBlockCollision(Bullet bullet, DestructibleBlock block) {
+        public static bool BulletBlockCollision(Bullet bullet, DestructibleBlock block) {
             var collisionInfoLengthA = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, block.Length1);
             var collisionInfoLengthB = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, block.Length2);
-            if (collisionInfoLengthA != null) {
-                var pointOfImpact = bullet.OldPosition + bullet.Velocity * Time.deltaTime * collisionInfoLengthA.TimeOfImpact;
-                var projectedPoint = Vec2.ProjectPointOnLineSegment(pointOfImpact, block.Length1.Start, block.Length1.End);
-                var splitSegments = DestructibleBlock.Split(block, projectedPoint, Globals.World.BulletDLSDamage);
-                return (splitSegments.Item1, splitSegments.Item2, null);
-            }
-
-            if (collisionInfoLengthB != null) {
-                var pointOfImpact = bullet.OldPosition + bullet.Velocity * Time.deltaTime * collisionInfoLengthB.TimeOfImpact;
-                var projectedPoint = Vec2.ProjectPointOnLineSegment(pointOfImpact, block.Length1.Start, block.Length1.End);
-                var splitSegments = DestructibleBlock.Split(block, projectedPoint, Globals.World.BulletDLSDamage);
-                return (splitSegments.Item1, splitSegments.Item2, null);
-            }
-
             var collisionInfoSideA = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, block.Side1);
             var collisionInfoSideB = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, block.Side2);
-            if (collisionInfoSideA != null && collisionInfoSideB != null)
-                return (null, null, collisionInfoSideA.TimeOfImpact < collisionInfoSideB.TimeOfImpact ? collisionInfoSideA : collisionInfoSideB);
-            if (collisionInfoSideA != null)
-                return (null, null, collisionInfoSideA);
-            if (collisionInfoSideB != null)
-                return (null, null, collisionInfoSideB);
-            return (null, null, null);
+
+            if (collisionInfoLengthA != null) return true;
+            if (collisionInfoLengthB != null) return true;
+            if (collisionInfoSideA != null) return true;
+            if (collisionInfoSideB != null) return true;
+            return false;
+        }
+
+        public static CollisionInfo CircleBlockCollision(Vec2 circlePosition, Vec2 oldCirclePosition, Vec2 circleVelocity, float circleRadius, DestructibleBlock block) {
+            var collisionInfoLengthA = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, block.Length1);
+            var collisionInfoLengthB = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, block.Length2);
+            var collisionInfoSideA = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, block.Side1);
+            var collisionInfoSideB = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, block.Side2);
+            var ci = new List<CollisionInfo> {collisionInfoLengthA, collisionInfoLengthB, collisionInfoSideA, collisionInfoSideB};
+            ci.RemoveAll(c => c == null);
+            ci.Sort((c1, c2) => c1.TimeOfImpact.CompareTo(c2.TimeOfImpact));
+            return ci.Count > 0 ? ci[0] : null;
+        }
+
+        public static bool BulletChunkCollision(Bullet bullet, DestructibleChunk chunk) {
+            var ci1 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.LineSegment0);
+            var ci2 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.LineSegment1);
+            var ci3 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.LineSegment2);
+            var cir1 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.RLineSegment0);
+            var cir2 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.RLineSegment1);
+            var cir3 = CircleLineCollision(bullet.Position, bullet.OldPosition, bullet.Velocity * Time.deltaTime, bullet.Radius, chunk.RLineSegment2);
+            return ci1 != null || ci2 != null || ci3 != null || cir1 != null || cir2 != null || cir3 != null;
+        }
+
+        public static CollisionInfo CircleChunkCollision(Vec2 circlePosition, Vec2 oldCirclePosition, Vec2 circleVelocity, float circleRadius, DestructibleChunk chunk) {
+            var ci1 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.LineSegment0);
+            var ci2 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.LineSegment1);
+            var ci3 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.LineSegment2);
+            var cir1 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.RLineSegment0);
+            var cir2 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.RLineSegment1);
+            var cir3 = CircleLineCollision(circlePosition, oldCirclePosition, circleVelocity * Time.deltaTime, circleRadius, chunk.RLineSegment2);
+            var ci = new List<CollisionInfo> {ci1, ci2, ci3, cir1, cir2, cir3};
+            ci.RemoveAll(c => c == null);
+            ci.Sort((c1, c2) => c1.TimeOfImpact.CompareTo(c2.TimeOfImpact));
+            return ci.Count > 0 ? ci[0] : null;
         }
 
         public static CollisionInfo CircleCircleCollision(Vec2 position, Vec2 oldPosition, Vec2 velocity, float radius, Vec2 otherPosition, float otherRadius) {

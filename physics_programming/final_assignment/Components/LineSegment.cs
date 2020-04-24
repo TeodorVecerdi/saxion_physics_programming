@@ -41,7 +41,7 @@ namespace physics_programming.final_assignment.Components {
             GL.DisableClientState(GL.VERTEX_ARRAY);
             GL.Enable(GL.TEXTURE_2D);
         }
-        
+
         public static ValueTuple<LineSegment, LineSegment> Split(LineSegment a, Vec2 point, float size) {
             var line1Start = a.Start;
             var line1Vector = point - line1Start;
