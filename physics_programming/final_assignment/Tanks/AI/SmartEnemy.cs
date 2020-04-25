@@ -3,11 +3,11 @@ using System.Drawing;
 using GXPEngine;
 
 namespace physics_programming.final_assignment {
-    public class SmartEnemyAI : TankAIBase {
+    public class SmartEnemy : TankAIBase {
         private readonly AttackIndicator attackIndicator;
 
-        public SmartEnemyAI(float px, float py, float accuracy = 1f) : base(accuracy) {
-            Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove, 0xffffeabc);
+        public SmartEnemy(float px, float py, float accuracy = 1f, float timeToShoot = 2f) : base(accuracy, timeToShoot) {
+            Tank = new Tank(px, py, this, TankMove, TankShoot, BarrelMove, 0xffffeabc);
             AddChild(Tank);
             attackIndicator = new AttackIndicator(TimeToShoot, radius: 50, color: Color.FromArgb(127, 55, 55, 255));
             attackIndicator.SetXY(25, -50);

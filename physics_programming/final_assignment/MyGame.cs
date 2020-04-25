@@ -17,13 +17,8 @@ namespace physics_programming.final_assignment {
         public Player Player;
         public Scene currentScene = null;
         public Scene newScene = null;
-        
-        private Scene testScene = new TestScene();
 
         private bool paused;
-        private bool stepped;
-
-        private int stepIndex;
 
         public MyGame() : base(Globals.WIDTH, Globals.HEIGHT, Globals.FULLSCREEN, Globals.VSYNC, pPixelArt: Globals.PIXEL_ART, windowTitle: Globals.WINDOW_TITLE) {
             targetFps = 60;
@@ -36,7 +31,7 @@ namespace physics_programming.final_assignment {
             DestructibleChunks = new List<DestructibleChunk>();
             Enemies = new List<TankAIBase>();
 
-            newScene = testScene;
+            newScene = new Tutorial();
             Restart();
             PrintInfo();
         }
@@ -56,7 +51,6 @@ namespace physics_programming.final_assignment {
                 Movers.Add(new Ball(0, end, isKinematic: true));
             }
         }
-
         public void AddDestructibleLine(Vec2 start, Vec2 end, bool addLineEndings = true, uint color = 0xff00ff00) {
             var line = new DoubleDestructibleLineSegment(start, end, color, 2);
             AddChild(line);
@@ -68,41 +62,34 @@ namespace physics_programming.final_assignment {
             }
         }
 
+        public void AddDestructibleBlock(Vec2 start, Vec2 end, float blockWidth) {
+            var block = new DestructibleBlock(blockWidth, start, end);
+            DestructibleBlocks.Add(block);
+            AddChild(block);
+        }
         public void AddBullet(Bullet bullet) {
             Bullets.Add(bullet);
             AddChild(bullet);
         }
+        public void AddBorders() {
+            AddLine(new Vec2(0, Globals.HEIGHT), new Vec2(0, 0));
+            AddLine(new Vec2(Globals.WIDTH, 0), new Vec2(Globals.WIDTH, Globals.HEIGHT));
+            AddLine(new Vec2(0, 0), new Vec2(Globals.WIDTH, 0));
+            AddLine(new Vec2(Globals.WIDTH, Globals.HEIGHT), new Vec2(0, Globals.HEIGHT));
+        }
 
         private void PrintInfo() {
             Console.WriteLine("Hold SPACE to slow down the frame rate.");
-            Console.WriteLine("Use arrow keys and backspace to set the gravity.");
-            Console.WriteLine("Press X to toggle stepped mode.");
             Console.WriteLine("Press P to toggle pause.");
             Console.WriteLine("Press R to reset scene");
         }
 
         private void HandleInput() {
-            targetFps = Input.GetKey(Key.SPACE) ? 1 : 60;
-            if (Input.GetKeyDown(Key.UP))
-                Ball.Acceleration.SetXY(0, -1);
-            if (Input.GetKeyDown(Key.DOWN))
-                Ball.Acceleration.SetXY(0, 1);
-            if (Input.GetKeyDown(Key.LEFT))
-                Ball.Acceleration.SetXY(-1, 0);
-            if (Input.GetKeyDown(Key.RIGHT))
-                Ball.Acceleration.SetXY(1, 0);
-            if (Input.GetKeyDown(Key.BACKSPACE))
-                Ball.Acceleration.SetXY(0, 0);
-            if (Input.GetKeyDown(Key.X))
-                stepped ^= true;
+            targetFps = Input.GetKey(Key.SPACE) ? 10 : 60;
             if (Input.GetKeyDown(Key.P))
                 paused ^= true;
             if (Input.GetKeyDown(Key.R))
                 Restart();
-
-            if (Input.GetKeyDown(Key.T))
-                foreach (var line in DestructibleLines)
-                    Console.WriteLine($"Line Size: {(line.SideA.End - line.SideA.Start).magnitude}");
         }
 
         private void Restart() {
@@ -140,20 +127,30 @@ namespace physics_programming.final_assignment {
         }
 
         private void StepThroughMovers() {
-            if (stepped) {
-                stepIndex++;
-                if (stepIndex >= Movers.Count)
-                    stepIndex = 0;
-                if (!Movers[stepIndex].IsKinematic)
-                    Movers[stepIndex].Step();
-            } else Movers.Where(mover => !mover.IsKinematic).ToList().ForEach(mover => mover.Step());
-
+            Movers.ForEach(mover => mover.Step());
+            UpdateTanks();
             UpdateBullets();
             UpdateDestructibleEnvironment();
+            var shouldSwitch = currentScene.SwitchScene(this);
+            if (shouldSwitch != null) {
+                newScene = shouldSwitch;
+                Restart();
+            }
+        }
+
+        private void UpdateTanks() {
+            Enemies.Where(enemy => enemy.Dead).ToList().ForEach(enemy => {
+                enemy.Destroy();
+                Enemies.Remove(enemy);
+            });
+            if (Player.Dead) {
+                Player.Destroy();
+                Player = null;
+            }
         }
 
         private void UpdateBullets() {
-            foreach (var bullet in Bullets) bullet.Step();
+            Bullets.ForEach(bullet => bullet.Step());
             Bullets.Where(b => b.Dead).ToList().ForEach(bullet => {
                 bullet.Destroy();
                 Bullets.Remove(bullet);

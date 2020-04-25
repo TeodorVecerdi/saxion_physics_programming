@@ -53,6 +53,8 @@ namespace physics_programming.final_assignment {
         }
 
         public void Step() {
+            if(IsKinematic) return;
+            
             Velocity += Acceleration * Gravity;
             oldPosition = Position;
             Position += Velocity;
@@ -109,7 +111,6 @@ namespace physics_programming.final_assignment {
             if (float.IsPositiveInfinity(collisionInfo.TimeOfImpact)) return null;
             return collisionInfo;
         }
-
         private CollisionInfo FindEarliestLineCollision() {
             var myGame = (MyGame) game;
             var collisionInfo = new CollisionInfo(Vec2.Zero, null, Mathf.Infinity);

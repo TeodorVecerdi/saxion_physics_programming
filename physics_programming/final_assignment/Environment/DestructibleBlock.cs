@@ -73,8 +73,9 @@ namespace physics_programming.final_assignment {
         }
 
         private void Draw() {
-            Stroke(Color.FromArgb(255, 110, 98));
-            Fill(Color.FromArgb(73, 21, 6), 127);
+            Clear(Color.Transparent);
+            Stroke(Color.FromArgb(73, 21, 6));
+            Fill(Color.FromArgb(73, 21, 6));
 
             // Fill(255, 255, 255, 100);
             Quad((int) BlockVertices[0].x, (int) BlockVertices[0].y,

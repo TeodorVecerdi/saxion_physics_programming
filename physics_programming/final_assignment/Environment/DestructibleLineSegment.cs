@@ -48,15 +48,20 @@ namespace physics_programming.final_assignment {
             var line1Length = line1Vector.magnitude - size;
             line1Vector = line1Vector.normalized * line1Length;
             var line1End = line1Start + line1Vector;
-            var line1 = new DestructibleLineSegment(line1Start, line1End, a.Color, a.LineWidth);
+            DestructibleLineSegment line1 = null;
+            if (line1Length >= Globals.World.DestructibleLineMinLength) {
+                line1 = new DestructibleLineSegment(line1Start, line1End, a.Color, a.LineWidth);
+            }
 
             var line2End = a.End;
             var line2Vector = point - line2End;
             var line2Length = line2Vector.magnitude - size;
             line2Vector = line2Vector.normalized * line2Length;
             var line2Start = line2End + line2Vector;
-            var line2 = new DestructibleLineSegment(line2Start, line2End, a.Color, a.LineWidth);
-
+            DestructibleLineSegment line2 = null;
+            if (line2Length >= Globals.World.DestructibleLineMinLength) {
+                line2 = new DestructibleLineSegment(line2Start, line2End, a.Color, a.LineWidth);
+            }
             if ((line1End - line1Start).sqrMagnitude <= Globals.World.DestructibleLineMinLength * Globals.World.DestructibleLineMinLength) line1 = null;
             if ((line2End - line2Start).sqrMagnitude <= Globals.World.DestructibleLineMinLength * Globals.World.DestructibleLineMinLength) line2 = null;
             return ValueTuple.Create(line1, line2);

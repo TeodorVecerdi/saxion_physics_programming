@@ -12,7 +12,7 @@ namespace physics_programming.final_assignment {
 
         public Player(float px, float py, float maxVelocity) : base(1f, 0f) {
             this.maxVelocity = maxVelocity;
-            Tank = new Tank(px, py, TankMove, TankShoot, BarrelMove);
+            Tank = new Tank(px, py, this, TankMove, TankShoot, BarrelMove);
             AddChild(Tank);
         }
 

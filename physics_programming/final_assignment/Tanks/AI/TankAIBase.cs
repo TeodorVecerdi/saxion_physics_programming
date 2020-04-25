@@ -5,6 +5,7 @@ using GXPEngine;
 namespace physics_programming.final_assignment {
     public abstract class TankAIBase : GameObject {
         public Tank Tank;
+        public bool Dead = false;
         protected const float AccuracyDegreeVariation = 30f;
 
         private readonly bool waitToShoot;

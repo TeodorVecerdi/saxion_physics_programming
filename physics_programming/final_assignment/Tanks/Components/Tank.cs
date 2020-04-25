@@ -8,6 +8,7 @@ namespace physics_programming.final_assignment {
     public class Tank : Sprite {
         public readonly Barrel Barrel;
         public readonly List<CircleCollider> Colliders;
+        public readonly TankAIBase AIRef;
 
         public Vec2 Acceleration;
         public Vec2 OldPosition;
@@ -18,9 +19,10 @@ namespace physics_programming.final_assignment {
         private readonly Action<Tank> tankMove;
         private readonly Action<Tank> tankShoot;
 
-        public Tank(float px, float py, Action<Tank> tankMove, Action<Tank> tankShoot, Action<Tank> barrelMove, uint color = 0xffffffff) : base("data/assets/bodies/t34.png") {
+        public Tank(float px, float py, TankAIBase aiRef, Action<Tank> tankMove, Action<Tank> tankShoot, Action<Tank> barrelMove, uint color = 0xffffffff) : base("data/assets/bodies/t34.png") {
             Position.x = px;
             Position.y = py;
+            AIRef = aiRef;
             this.tankMove = tankMove;
             this.tankShoot = tankShoot;
             this.barrelMove = barrelMove;

@@ -7,6 +7,7 @@ namespace physics_programming.final_assignment {
     public class Bullet : Sprite {
         public const float Bounciness = 0.95f;
         public const float Speed = 500f;
+        public const int MaxBounces = 2;
 
         public readonly float Radius;
         public bool Dead;
@@ -17,11 +18,11 @@ namespace physics_programming.final_assignment {
         private readonly Tank parentTank;
         private int bouncesLeft;
 
-        public Bullet(Vec2 position, Vec2 velocity, Tank parentTank, int maxBounces = 0, int radius = 2) : base("data/assets/bullet.png") {
+        public Bullet(Vec2 position, Vec2 velocity, Tank parentTank, float radius = 2) : base("data/assets/bullet.png") {
             Position = position;
             Velocity = velocity * Speed;
             this.parentTank = parentTank;
-            bouncesLeft = maxBounces;
+            bouncesLeft = MaxBounces;
             Radius = radius;
 
             UpdateScreenPosition();
@@ -71,22 +72,19 @@ namespace physics_programming.final_assignment {
             foreach (var destructibleChunk in g.DestructibleChunks) {
                 if (!CollisionUtils.BulletChunkCollision(this, destructibleChunk)) continue;
                 destructibleChunk.ShouldRemove = true;
-
-                if (bouncesLeft <= 0) Dead = true;
-                else bouncesLeft--;
+                Dead = true;
+                break;
             }
 
             //// BLOCKS
             var chunksToAdd = new List<DestructibleChunk>();
             foreach (var destructibleBlock in g.DestructibleBlocks) {
                 if (!CollisionUtils.BulletBlockCollision(this, destructibleBlock)) continue;
-
                 destructibleBlock.ShouldRemove = true;
                 var chunks = DestructibleBlock.Destruct(destructibleBlock);
                 chunksToAdd.AddRange(chunks);
-
-                if (bouncesLeft <= 0) Dead = true;
-                else bouncesLeft--;
+                Dead = true;
+                break;
             }
 
             chunksToAdd.ForEach(chunk => {
@@ -109,6 +107,7 @@ namespace physics_programming.final_assignment {
                 if (collisionInfo == null) continue;
 
                 Dead = true;
+                colliderParent.AIRef.Dead = true;
                 break;
             }
 
@@ -130,7 +129,6 @@ namespace physics_programming.final_assignment {
 
         private void ResolveCollision(CollisionInfo collisionInfo) {
             if (collisionInfo.Other == null) {
-                // Line collision
                 Position = OldPosition + Velocity * Time.deltaTime * collisionInfo.TimeOfImpact;
                 Velocity.Reflect(collisionInfo.Normal, Bounciness);
                 rotation = Velocity.GetAngleDegrees();
