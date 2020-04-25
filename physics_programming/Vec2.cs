@@ -1,5 +1,7 @@
 using System;
 using DelaunayVoronoi;
+
+// using DelaunayVoronoi;
 using GXPEngine;
 
 namespace physics_programming {
@@ -274,14 +276,6 @@ namespace physics_programming {
 
         public static implicit operator Vec2((float, float) valueTuple) {
             return new Vec2(valueTuple.Item1, valueTuple.Item2);
-        }
-
-        public static implicit operator Vec2(Point point) {
-            return new Vec2((float) point.X, (float) point.Y);
-        }
-
-        public static implicit operator Point(Vec2 vec2) {
-            return new Point(vec2.x, vec2.y);
         }
 
         public static readonly Vec2 Zero = new Vec2(0f, 0f);

@@ -3,7 +3,7 @@ using GXPEngine;
 
 namespace physics_programming.final_assignment {
     public class AttackIndicator : EasyDraw {
-        private readonly Color color;
+        private readonly Color indicatorColor;
         private readonly float initialArcAngle;
         private readonly float initialTimeLeft;
         private readonly float radius;
@@ -14,7 +14,7 @@ namespace physics_programming.final_assignment {
 
         public AttackIndicator(float initialTimeLeft, Color? color = null, float initialArcAngle = 90f, float radius = 2f) : base((int) (2 * radius), (int) (2 * radius)) {
             this.initialTimeLeft = initialTimeLeft;
-            this.color = color ?? Color.White;
+            indicatorColor = color ?? Color.White;
             this.initialArcAngle = initialArcAngle;
             this.radius = radius;
             timeLeft = initialTimeLeft;
@@ -23,7 +23,7 @@ namespace physics_programming.final_assignment {
 
         public void Draw() {
             Clear(Color.Transparent);
-            Fill(color, color.A);
+            Fill(indicatorColor, indicatorColor.A);
             NoStroke();
             Arc(radius, radius, 2 * radius, 2 * radius, startAngle, arcAngle);
         }

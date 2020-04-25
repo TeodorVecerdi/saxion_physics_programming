@@ -97,9 +97,9 @@ namespace physics_programming.final_assignment {
 
             return
                 from triangle in triangles
-                let v0 = MathUtils.MapPointOnQuad(triangle.Vertices[0], originalQuad, targetQuad)
-                let v1 = MathUtils.MapPointOnQuad(triangle.Vertices[1], originalQuad, targetQuad)
-                let v2 = MathUtils.MapPointOnQuad(triangle.Vertices[2], originalQuad, targetQuad)
+                let v0 = MathUtils.MapPointOnQuad(new Vec2((float) triangle.Vertices[0].X, (float) triangle.Vertices[0].Y), originalQuad, targetQuad)
+                let v1 = MathUtils.MapPointOnQuad(new Vec2((float) triangle.Vertices[1].X, (float) triangle.Vertices[1].Y), originalQuad, targetQuad)
+                let v2 = MathUtils.MapPointOnQuad(new Vec2((float) triangle.Vertices[2].X, (float) triangle.Vertices[2].Y), originalQuad, targetQuad)
                 select new DestructibleChunk(v0, v1, v2);
         }
     }
