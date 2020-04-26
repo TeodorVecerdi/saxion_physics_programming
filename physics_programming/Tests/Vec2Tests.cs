@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace physics_programming.tests {
     [TestFixture(TestOf = typeof(Vec2))]
     public class Vec2Tests {
-        private const float tolerance = 0.000001f;
+        private const float tolerance = 0.0001f;
 
         [Test]
         public void Create() {
@@ -127,7 +127,7 @@ namespace physics_programming.tests {
             var expected = 5.034886048982f;
             Assert.IsTrue(Math.Abs(radians - expected) < tolerance);
         }
-        
+
         [Test]
         public void Rad2Deg() {
             var radians = 3.494212610f;
@@ -214,6 +214,60 @@ namespace physics_programming.tests {
             diff.x = Math.Abs(diff.x);
             diff.y = Math.Abs(diff.y);
             Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"normal({a}) = {normal}, expected({expected})");
+        }
+
+        [Test]
+        public void Reflect() {
+            var velocity = new Vec2(-4.908581f, -8.712396f);
+            var normal = (new Vec2(200, 300) - new Vec2(100, 150)).Normal();
+            var reflect1 = velocity;
+            var reflect2 = velocity;
+            reflect1.Reflect(normal);
+            reflect2.Reflect(normal, 0.85f);
+            var expected1 = new Vec2(-6.154295f, -7.881919f);
+            var expected2 = new Vec2(-6.060867f, -7.944205f);
+            var diff1 = expected1 - reflect1;
+            diff1.x = Math.Abs(diff1.x);
+            diff1.y = Math.Abs(diff1.y);
+            var diff2 = expected2 - reflect2;
+            diff2.x = Math.Abs(diff2.x);
+            diff2.y = Math.Abs(diff2.y);
+            Assert.IsTrue(diff1.x < tolerance && diff1.y < tolerance, $"{velocity}.Reflect({normal}, 1f) = {reflect1}, expected({expected1})");
+            Assert.IsTrue(diff2.x < tolerance && diff2.y < tolerance, $"{velocity}.Reflect({normal}, 0.85f) = {reflect2}, expected({expected2})");
+        }
+
+        [Test]
+        public void Op_UnaryNegation() {
+            var vector = Vec2.RandomUnitVector();
+            var expected = new Vec2(-vector.x, -vector.y);
+            var actual = -vector;
+            var diff = expected - actual;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"-{vector} = {actual}, expected({expected})");
+        }
+
+        [Test]
+        public void Det() {
+            var a = new Vec2(-8.493346f, 5.278548f);
+            var b = new Vec2(-2.075286f, 9.78229f);
+            var actual = a.Det(b);
+            var expected = -72.12988f;
+            var diff = Math.Abs(expected - actual);
+            Assert.IsTrue(diff < tolerance, $"{a}.Det({b}) = {actual}, expected {expected}");
+        }
+
+        [Test]
+        public void ProjectPointOnLineSegment() {
+            var segmentStart = new Vec2(147f, 210f);
+            var segmentEnd = new Vec2(605f, 373f);
+            var point = new Vec2(115.677f,192.64f);
+            var projected = Vec2.ProjectPointOnLineSegment(point, segmentStart, segmentEnd);
+            var expected = new Vec2(113.7146f, 198.1539f);
+            var diff = expected - projected;
+            diff.x = Math.Abs(diff.x);
+            diff.y = Math.Abs(diff.y);
+            Assert.IsTrue(diff.x < tolerance && diff.y < tolerance, $"Vec2.Project({point}, start, end) = {projected}, expected {expected}, diff {diff}");
         }
     }
 }

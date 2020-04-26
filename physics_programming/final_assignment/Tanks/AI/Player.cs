@@ -4,14 +4,14 @@ using physics_programming.final_assignment.Utils;
 
 namespace physics_programming.final_assignment {
     public class Player : TankAIBase {
-        private readonly float maxVelocity;
+        public readonly float MaxVelocity;
         public new Tank Tank {
             get => base.Tank;
             set => base.Tank = value;
         }
 
         public Player(float px, float py, float maxVelocity) : base(1f, 0f) {
-            this.maxVelocity = maxVelocity;
+            MaxVelocity = maxVelocity;
             Tank = new Tank(px, py, this, TankMove, TankShoot, BarrelMove);
             AddChild(Tank);
         }
@@ -39,8 +39,8 @@ namespace physics_programming.final_assignment {
             Controls(tank);
             if (tank.Acceleration != Vec2.Zero) {
                 tank.Velocity += tank.Acceleration;
-                if (tank.Velocity.sqrMagnitude >= maxVelocity * maxVelocity)
-                    tank.Velocity = tank.Velocity.normalized * maxVelocity;
+                if (tank.Velocity.sqrMagnitude >= MaxVelocity * MaxVelocity)
+                    tank.Velocity = tank.Velocity.normalized * MaxVelocity;
             } else {
                 var newVel = ExponentialDecay(tank, 5f);
                 tank.Velocity = newVel;
@@ -58,7 +58,7 @@ namespace physics_programming.final_assignment {
             if (Input.GetKey(Key.A))
                 rotationAmount += -1f;
 
-            rotationAmount *= MathUtils.Map(tank.Velocity.sqrMagnitude, 0, maxVelocity * maxVelocity, 0, 1);
+            rotationAmount *= MathUtils.Map(tank.Velocity.sqrMagnitude, 0, MaxVelocity * MaxVelocity, 0, 1);
             tank.rotation += rotationAmount;
             tank.Acceleration = Vec2.Right * 20f;
             tank.Acceleration.SetAngleDegrees(tank.rotation);

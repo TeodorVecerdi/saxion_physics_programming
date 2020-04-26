@@ -1,10 +1,4 @@
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using DelaunayVoronoi;
 using GXPEngine;
-using physics_programming.final_assignment;
-using Point = DelaunayVoronoi.Point;
 
 namespace physics_programming.testing {
     public class MainAppTesting : Game {

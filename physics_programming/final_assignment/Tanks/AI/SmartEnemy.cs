@@ -33,24 +33,28 @@ namespace physics_programming.final_assignment {
         protected override void BarrelMove(Tank tank) {
             // Advanced aiming
             // vars
-            var target = ((MyGame) game).Player.Tank;
-            var targetVelocityWhenShot = target.Velocity + TimeLeftToShoot * target.Acceleration;
-            var positionDelta = target.Position - tank.Position;
+            var player = ((MyGame) game).Player;
+            var targetTank = player.Tank;
+            var targetVelocityWhenShot = targetTank.Velocity + TimeLeftToShoot * targetTank.Acceleration;
+            if (targetVelocityWhenShot.sqrMagnitude >= player.MaxVelocity * player.MaxVelocity)
+                targetVelocityWhenShot = targetVelocityWhenShot.normalized * player.MaxVelocity;
+            
+            var positionDelta = targetTank.Position - tank.Position;
 
             // quadratic equation
             var a = targetVelocityWhenShot.Dot(targetVelocityWhenShot) - Bullet.Speed * Bullet.Speed;
             var b = 2f * targetVelocityWhenShot.Dot(positionDelta);
             var c = positionDelta.Dot(positionDelta);
-            var det = b * b - 4f * a * c;
-            if (det <= 0f) return;
-            var t = 2f * c / (Mathf.Sqrt(det) - b);
+            var delta = b * b - 4f * a * c;
+            if (delta <= 0f) return;
+            var t = 2f * c / (Mathf.Sqrt(delta) - b);
             if (t < 0f) return;
 
             // rotation
-            var aimTarget = target.Position + t * targetVelocityWhenShot;
+            var aimTarget = targetTank.Position + t * targetVelocityWhenShot;
             var desiredRotation = -tank.rotation + Vec2.Rad2Deg((float) Math.Atan2(aimTarget.y - tank.Position.y, aimTarget.x - tank.Position.x));
-            var delta = desiredRotation - tank.Barrel.rotation;
-            var shortestAngle = Mathf.Clamp(delta - Mathf.Floor(delta / 360f) * 360f, 0.0f, 360f);
+            var deltaRotation = desiredRotation - tank.Barrel.rotation;
+            var shortestAngle = Mathf.Clamp(deltaRotation - Mathf.Floor(deltaRotation / 360f) * 360f, 0.0f, 360f);
             if (shortestAngle > 180)
                 shortestAngle -= 360;
             if (Math.Abs(tank.Barrel.rotation - desiredRotation) > 0.5)

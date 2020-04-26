@@ -1,7 +1,4 @@
 using System;
-using DelaunayVoronoi;
-
-// using DelaunayVoronoi;
 using GXPEngine;
 
 namespace physics_programming {
@@ -76,9 +73,9 @@ namespace physics_programming {
         /// <param name="normal">The normal vector</param>
         /// <param name="bounciness">The coefficient of reflection</param>
         public void Reflect(Vec2 normal, float bounciness = 1f) {
-            var vOut = this - (1 + bounciness) * Dot(normal) * normal;
-            x = vOut.x;
-            y = vOut.y;
+            var velocityOut = this - (1 + bounciness) * Dot(normal) * normal;
+            x = velocityOut.x;
+            y = velocityOut.y;
         }
 
         /// <summary>
@@ -86,7 +83,7 @@ namespace physics_programming {
         /// </summary>
         public void Normalize() {
             var mag = magnitude;
-            if (mag < 0.000001f) // Console.Error.WriteLine($"Division by magnitude of zero while normalizing Vec2: {this}");
+            if (mag < 0.000001f)
                 return;
 
             x /= mag;
@@ -149,10 +146,20 @@ namespace physics_programming {
             SetXY(newX, newY);
         }
 
+        /// <summary>
+        /// Rotates this Vec2 around <paramref name="point"/> by <paramref name="degrees"/>
+        /// </summary>
+        /// <param name="point">The point around which to rotate</param>
+        /// <param name="degrees">The amount of degrees to rotate by</param>
         public void RotateAroundDegrees(Vec2 point, float degrees) {
             RotateAroundRadians(point, Deg2Rad(degrees));
         }
 
+        /// <summary>
+        /// Rotates this Vec2 around <paramref name="point"/> by <paramref name="radians"/>
+        /// </summary>
+        /// <param name="point">The point around which to rotate</param>
+        /// <param name="radians">The amount of radians to rotate by</param>
         public void RotateAroundRadians(Vec2 point, float radians) {
             var copy = this;
             copy -= point;
@@ -161,29 +168,50 @@ namespace physics_programming {
             SetXY(copy.x, copy.y);
         }
 
+        
+        /// <summary>
+        /// Helper function used to convert from degrees to radians 
+        /// </summary>
         public static float Deg2Rad(float degrees) {
             return degrees / 180.0f * Mathf.PI;
         }
-
+        
+        /// <summary>
+        /// Helper function used to convert from radians to degrees 
+        /// </summary>
         public static float Rad2Deg(float radians) {
             return radians * 180.0f / Mathf.PI;
         }
 
+        /// <summary>
+        /// Returns a unit vector rotated by <paramref name="degrees"/> degrees
+        /// </summary>
+        /// <param name="degrees">Degrees</param>
+        /// <returns>Unit vector rotated by <paramref name="degrees"/> degrees</returns>
         public static Vec2 GetUnitVectorDeg(float degrees) {
             return GetUnitVectorRad(Deg2Rad(degrees));
         }
 
+        /// <summary>
+        /// Returns a unit vector rotated by <paramref name="radians"/> radians
+        /// </summary>
+        /// <param name="radians">Radians</param>
+        /// <returns>Unit vector rotated by <paramref name="radians"/> radians</returns>
         public static Vec2 GetUnitVectorRad(float radians) {
             return new Vec2(Mathf.Cos(radians), Mathf.Sin(radians));
         }
 
+        /// <summary>
+        /// Returns a random unit vector
+        /// </summary>
+        /// <returns>Random unit vector</returns>
         public static Vec2 RandomUnitVector() {
             var rad = Utils.Random(0, Mathf.PI * 2f);
             return GetUnitVectorRad(rad);
         }
 
         /// <summary>
-        ///     Projects a point on a line segment
+        ///     Calculates and returns <paramref name="q" /> projected on the line segment from <paramref name="p0" /> to <paramref name="p1" />
         /// </summary>
         /// <param name="q">Point to project</param>
         /// <param name="p0">Start of line segment</param>
